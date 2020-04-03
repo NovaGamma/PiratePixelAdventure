@@ -1,0 +1,8 @@
+title Get it off my chest
+control_button CONTROLS
+left_control_button left
+jump_control_button jump
+right_control_button right
+down_control_button down
+shoot_control_button shoot
+language_button LANGUAGE

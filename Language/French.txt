@@ -1,0 +1,8 @@
+title Descend de mon coffre
+control_button CONTROLES
+left_control_button gauche
+jump_control_button saut
+right_control_button droite
+down_control_button bas
+shoot_control_button tirer
+language_button LANGUE

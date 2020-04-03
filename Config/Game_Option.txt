@@ -1,0 +1,3 @@
+screenX 1400
+screenY 700
+language English
