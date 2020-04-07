@@ -157,6 +157,7 @@ class player(object):
                     k=projectile(self.x,self.y+self.h//2-self.spdy//2,self.spdx,self.spdy,'knife',1)
                 prjs.append(k)
                 self.cooldown=20
+        
 
 def health_draw():
         heart=0

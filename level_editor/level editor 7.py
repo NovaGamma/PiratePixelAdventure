@@ -6,7 +6,7 @@ class TextInput:
     Copyright 2017, Silas Gyger, silasgyger@gmail.com, All rights reserved.
 
     Borrowed from https://github.com/Nearoo/pygame-text-input under the MIT license.
-    
+
     This class lets the user input a piece of text, e.g. a name or a message.
     This class let's the user input a short, one-lines piece of text at a blinking cursor
     that can be moved using the arrow-keys. Delete, home and end work as well.
