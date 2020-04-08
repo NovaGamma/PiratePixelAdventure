@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import*
 import os
+import random
 
 class button:
     def __init__(self,height,width,x,y):
@@ -83,12 +84,13 @@ class platform(object):
         if self.x+self.width>=0 and self.x<screenx:
             screen.blit(self.img,(self.x,self.y))
     def check(self):
-        for i in enemies:
+        for i in entities:
             if self.y+15-i.height>=i.y>=self.y+i.spdy-i.height and self.x-i.width+20<=i.x<=-20+self.x+self.width:
                 i.spdy=0
                 i.y=self.y-i.height
                 i.isground=True
                 i.isjump=False
+
 class people(object):
     def __init__(self,x,y,height,width,mass,health,prj=None):
         self.x=x
@@ -115,16 +117,6 @@ class people(object):
         self.cooldown=0
         self.turn=False#null
 
-class ennemy(people):
-    def __init__(self,x,y,height,width,mass,health):
-        people.__init__(self,x,y,height,width,mass,health)
-
-    def move(self):
-        pass
-
-class player(object):
-    def __init__(self,x,y,height,width,mass,health,prj):
-        people.__init__(self,x,y,height,width,mass,health,prj)
     def draw(self,hitbox=False):
         if not self.isground:
             if self.spdy>5:
@@ -153,21 +145,34 @@ class player(object):
             pygame.draw.rect(screen,(255,0,0),self.hitbox,2)
         if self.cooldown>0:
             self.cooldown-=1
+
+class ennemy(people):
+    def __init__(self,x,y,height,width,mass,health):
+        people.__init__(self,x,y,height,width,mass,health)
+
+    def move(self):
+        pass
+
+class player(people):
+    def __init__(self,x,y,height,width,mass,health,prj):
+        self.money=0
+        people.__init__(self,x,y,height,width,mass,health,prj)
+
     def attack(self):
         if self.prj=='axe' and self.cooldown==0:
             throwsound.play()
             if self.left:
-                a=projectile(self.x,self.y+self.height//2-self.spdy//2,self.spdx,self.spdy,'axe',-1)
+                a=projectile(self.x,self.y+self.height//2-self.spdy//2,self.spdx,self.spdy,'axe',-1,'player')
             else:
-                a=projectile(self.x,self.y+self.height//2-self.spdy//2,self.spdx,self.spdy,'axe',1)
+                a=projectile(self.x,self.y+self.height//2-self.spdy//2,self.spdx,self.spdy,'axe',1,'player')
             prjs.append(a)
             self.cooldown=20
         if self.prj=='knife' and self.cooldown<=10:
             throwsound.play()
             if self.left:
-                k=projectile(self.x,self.y+self.height//2-self.spdy//2,self.spdx,self.spdy,'knife',-1)
+                k=projectile(self.x,self.y+self.height//2-self.spdy//2,self.spdx,self.spdy,'knife',-1,'player')
             else:
-                k=projectile(self.x,self.y+self.height//2-self.spdy//2,self.spdx,self.spdy,'knife',1)
+                k=projectile(self.x,self.y+self.height//2-self.spdy//2,self.spdx,self.spdy,'knife',1,'player')
             prjs.append(k)
             self.cooldown=20
 
@@ -215,7 +220,7 @@ class cp(object):
             screen.blit(chestpoint[self.cpcount//2],(self.x,self.y))
 
 class projectile(object):
-    def __init__(self,x,y,spdx,spdy,typ,direction):
+    def __init__(self,x,y,spdx,spdy,typ,direction,owner):
         self.x=x
         self.y=y
         self.width=64#null
@@ -379,11 +384,14 @@ planks=[]
 cps=[]
 prjs=[]
 enemies=[]
+entities=[]
 spawnpoint=[300,screeny//2]
-enemies.append(player(300,screeny//2,128,96,1,3,'axe'))
+pirate=player(300,screeny//2,128,96,1,3,'axe')
+entities.append(pirate)
 for a in range(0,500,50):
-    enemies.append(player(350+2*a,screeny//2-50-3*a,128,96,1,3,'axe'))
-pirate=enemies[0]
+    enemies.append(ennemy(350+2*a,screeny//2-50-3*a,128,96,1,1))
+    entities.append(enemies[-1])
+
 plank_texture=pygame.image.load('Graphism/plank1.png')
 load('LVL',plank_texture)
 #creating all the buttons
@@ -454,7 +462,7 @@ while not end:
         else:
             screen.blit(bg,(0,0))
             keys=pygame.key.get_pressed()
-            for i in enemies:
+            for i in entities:
                 i.isground=False
             if pirate.y>screeny//2-pirate.spdy:#gonna be removed (swim)
                 pirate.isjump=False
@@ -467,7 +475,7 @@ while not end:
                 pirate.isjump=True
                 pirate.isground=False
                 pirate.spdy=pirate.jump
-            for i in enemies:
+            for i in entities:
                 if not i.isground:
                     i.isjump=True
                     i.spdy-=i.mass*g
@@ -508,7 +516,7 @@ while not end:
                         i.x-=pirate.spdx
                     for i in prjs:
                         i.x-=pirate.spdx
-                    for i in enemies[1:]:
+                    for i in enemies:
                         i.x-=pirate.spdx
                     pirate.spawnpoint[0]-=pirate.spdx
             elif keys[pygame.K_a] or keys[ControlOpt['left']]:
@@ -525,7 +533,7 @@ while not end:
                         i.x-=pirate.spdx
                     for i in prjs:
                         i.x-=pirate.spdx
-                    for i in enemies[1:]:
+                    for i in enemies:
                         i.x-=pirate.spdx
                     pirate.spawnpoint[0]-=pirate.spdx
             else:
@@ -536,14 +544,16 @@ while not end:
             for i in planks:
                 i.check()
                 i.draw()
-            for i in enemies[1:]:
+            for i in enemies:
                 if i.life>0:
                     if i.y>screeny:
                         i.life=0
                     for k in prjs:
 
                         if i.x<=k.x+k.width<=i.x+i.width+k.width and i.y<=k.y+k.height<=i.y+i.height+k.height:
-                            i.life=0
+                            i.life-=1
+                            if i.life==0:
+                                pirate.money+=1
                     for j in planks:
                         if j.x+i.width-10<=i.x+i.width<=j.x+j.width+10:
                             if not i.turn and i.x+i.width>=j.x+j.width:
@@ -554,7 +564,6 @@ while not end:
                                 i.turn=True
                             elif i.x+300>pirate.x>i.x and pirate.y-15<i.y<pirate.y+15:
                                 i.turn=False
-                    '''
                     if i.isground and not i.turn:
                         i.x+=10
                         i.stand=False
@@ -564,12 +573,12 @@ while not end:
                         i.x-=10
                         i.stand=False
                         i.right=False
-                        i.left=True'''
+                        i.left=True
             for i in cps:
                 i.draw()
             for i in prjs:
                 i.move()
-            for i in enemies:
+            for i in entities:
                 if i.life>0:
                     i.draw(hitbox=True)
             health_draw()
