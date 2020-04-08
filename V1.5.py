@@ -116,6 +116,7 @@ class people(object):
         self.prj=prj
         self.cooldown=0
         self.turn=False#null
+        self.hit=False
 
     def draw(self,hitbox=False):
         if not self.isground:
@@ -152,6 +153,10 @@ class ennemy(people):
 
     def move(self):
         pass
+
+    def health_bar(self):
+        pygame.draw.rect(screen,(0,0,0), (self.x+self.width/2-26*ratiox,-10+self.y-6*ratioy,52*ratiox,10*ratioy))
+        pygame.draw.rect(screen,(255,0,0), (self.x+self.width/2-25*ratiox,-10+self.y-5*ratioy,50*self.life/self.health*ratiox,8*ratioy))
 
 class player(people):
     def __init__(self,x,y,height,width,mass,health,prj):
@@ -339,6 +344,8 @@ print(ScreenOpt)
 print(ControlOpt)
 screenx=ScreenOpt['screenX']
 screeny=ScreenOpt['screenY']
+ratiox=screenx/1400
+ratioy=screeny/700
 SaveOption()
 pygame.display.set_caption(Language["title"])
 frame=pygame.time.Clock()
@@ -389,7 +396,7 @@ spawnpoint=[300,screeny//2]
 pirate=player(300,screeny//2,128,96,1,3,'axe')
 entities.append(pirate)
 for a in range(0,500,50):
-    enemies.append(ennemy(350+2*a,screeny//2-50-3*a,128,96,1,1))
+    enemies.append(ennemy(350+2*a,screeny//2-50-3*a,128,96,1,2))
     entities.append(enemies[-1])
 
 plank_texture=pygame.image.load('Graphism/plank1.png').convert_alpha()
@@ -449,7 +456,7 @@ while not end:
     #the game
     while play:
         frame.tick(25)
-        print(frame)
+        #print(frame)
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 play=False
@@ -547,12 +554,21 @@ while not end:
                 if i.life>0:
                     if i.y>screeny:
                         i.life=0
+                    hitted=i.hit
                     for k in prjs:
-
                         if i.x<=k.x+k.width<=i.x+i.width+k.width and i.y<=k.y+k.height<=i.y+i.height+k.height:
-                            i.life-=1
-                            if i.life==0:
-                                pirate.money+=1
+                            if hitted==False:
+                                print("hitted")
+                                i.hit=True
+                                hitted=True
+                                i.life-=1
+                                print(i.life)
+                                if i.life==0:
+                                    pirate.money+=1
+                                    enemies.remove(i)
+                                    entities.remove(i)
+                    if hitted==False or len(prjs)==0:
+                        i.hit=False
                     for j in planks:
                         if j.x+i.width-10<=i.x+i.width<=j.x+j.width+10:
                             if not i.turn and i.x+i.width>=j.x+j.width:
@@ -563,6 +579,7 @@ while not end:
                                 i.turn=True
                             elif i.x+300>pirate.x>i.x and pirate.y-15<i.y<pirate.y+15:
                                 i.turn=False
+                    '''
                     if i.isground and not i.turn:
                         i.x+=10
                         i.stand=False
@@ -572,14 +589,16 @@ while not end:
                         i.x-=10
                         i.stand=False
                         i.right=False
-                        i.left=True
+                        i.left=True'''
             for i in cps:
                 i.draw()
             for i in prjs:
                 i.move()
-            for i in entities:
+            pirate.draw(hitbox=True)
+            for i in enemies:
                 if i.life>0:
                     i.draw(hitbox=True)
+                    i.health_bar()
             health_draw()
             screen.blit(parawheel,(screenx-64,0))
         pygame.display.update()
