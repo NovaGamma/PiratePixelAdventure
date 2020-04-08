@@ -343,7 +343,7 @@ SaveOption()
 pygame.display.set_caption(Language["title"])
 frame=pygame.time.Clock()
 screen=pygame.display.set_mode((screenx,screeny))
-bg=pygame.transform.scale(pygame.image.load('Graphism/bg (1).png'),(screenx,screeny))
+bg=pygame.transform.scale(pygame.image.load('Graphism/bg (1).png').convert_alpha(),(screenx,screeny))
 play=False
 start=False
 end=False
@@ -352,23 +352,23 @@ control_setting=False
 language_setting=False
 g=9.81
 #loading textures
-jumpright=[pygame.image.load('Graphism/jumpright0.png'),pygame.image.load('Graphism/jumpright1.png'),pygame.image.load('Graphism/jumpright2.png')]
-jumpleft=[pygame.image.load('Graphism/jumpleft0.png'),pygame.image.load('Graphism/jumpleft1.png'),pygame.image.load('Graphism/jumpleft2.png')]
+jumpright=[pygame.image.load('Graphism/jumpright0.png').convert_alpha(),pygame.image.load('Graphism/jumpright1.png').convert_alpha(),pygame.image.load('Graphism/jumpright2.png').convert_alpha()]
+jumpleft=[pygame.image.load('Graphism/jumpleft0.png').convert_alpha(),pygame.image.load('Graphism/jumpleft1.png').convert_alpha(),pygame.image.load('Graphism/jumpleft2.png').convert_alpha()]
 walkright=[]
 walkleft=[]
 for i in range(8):
     temp='rright'+str(i)+'.png'
     temp2='lleft'+str(i)+'.png'
-    walkright.append(pygame.image.load('Graphism/'+temp))
-    walkleft.append(pygame.image.load('Graphism/'+temp2))
-chestpoint=[pygame.image.load('Graphism/chestpoint (1).png'),pygame.image.load('Graphism/chestpoint (2).png'),pygame.image.load('Graphism/chestpoint (3).png'),pygame.image.load('Graphism/chestpoint (4).png'),pygame.image.load('Graphism/chestpoint (5).png')]
-f_heart=pygame.transform.scale(pygame.image.load('Graphism/Full_heart1.png'),(64,64))
-e_heart=pygame.transform.scale(pygame.image.load('Graphism/Empty_heart.png'),(64,64))
-raxx=[pygame.transform.scale(pygame.image.load('Graphism/raxx0.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx1.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx2.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx3.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx4.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx5.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx6.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx7.png'),(64,64))]
-laxx=[pygame.transform.scale(pygame.image.load('Graphism/laxx0.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx1.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx2.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx3.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx4.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx5.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx6.png'),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx7.png'),(64,64))]
-rniff=pygame.image.load('Graphism/rniff.png')
-lniff=pygame.image.load('Graphism/lniff.png')
-parawheel=pygame.image.load('Graphism/parawheel1.png')
+    walkright.append(pygame.image.load('Graphism/'+temp).convert_alpha())
+    walkleft.append(pygame.image.load('Graphism/'+temp2).convert_alpha())
+chestpoint=[pygame.image.load('Graphism/chestpoint (1).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (2).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (3).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (4).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (5).png').convert_alpha()]
+f_heart=pygame.transform.scale(pygame.image.load('Graphism/Full_heart1.png').convert_alpha(),(64,64))
+e_heart=pygame.transform.scale(pygame.image.load('Graphism/Empty_heart.png').convert_alpha(),(64,64))
+raxx=[pygame.transform.scale(pygame.image.load('Graphism/raxx0.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx1.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx2.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx3.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx4.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx5.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx6.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/raxx7.png').convert_alpha(),(64,64))]
+laxx=[pygame.transform.scale(pygame.image.load('Graphism/laxx0.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx1.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx2.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx3.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx4.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx5.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx6.png').convert_alpha(),(64,64)),pygame.transform.scale(pygame.image.load('Graphism/laxx7.png').convert_alpha(),(64,64))]
+rniff=pygame.image.load('Graphism/rniff.png').convert_alpha()
+lniff=pygame.image.load('Graphism/lniff.png').convert_alpha()
+parawheel=pygame.image.load('Graphism/parawheel1.png').convert_alpha()
 #loading sounds
 chestsound=pygame.mixer.Sound("Sounds/grincement.wav")
 chestsound2=pygame.mixer.Sound("Sounds/money.wav")
@@ -392,10 +392,10 @@ for a in range(0,500,50):
     enemies.append(ennemy(350+2*a,screeny//2-50-3*a,128,96,1,1))
     entities.append(enemies[-1])
 
-plank_texture=pygame.image.load('Graphism/plank1.png')
+plank_texture=pygame.image.load('Graphism/plank1.png').convert_alpha()
 load('LVL',plank_texture)
 #creating all the buttons
-button_setting=image_button(256,128,screenx//2-128,screeny//2-64,pygame.image.load('Graphism/button0.png'))
+button_setting=image_button(256,128,screenx//2-128,screeny//2-64,pygame.image.load('Graphism/button0.png').convert_alpha())
 button_control=text_button(256,128,screenx//2-128,screeny//2+128,Language['control_button'],20,128//3+20,(255,233,0))
 button_control_left=control_button(128,64,128,20,Language['left_control_button'],0,0,(255,233,0))
 button_control_jump=control_button(128,64,128,2*20+64,Language['jump_control_button'],0,0,(255,233,0))
@@ -405,8 +405,8 @@ button_control_shoot=control_button(128,64,128,5*20+4*64,Language['shoot_control
 button_controls=[button_control_left,button_control_right,button_control_down,button_control_jump,button_control_shoot]
 
 button_language=text_button(256,128,screenx//2-512,screeny//2+128,Language['language_button'],20,128//3+20,(255,233,0))
-french_button=language_button(256,128,screenx//2-512,screeny//2+128,'Français',pygame.image.load('Graphism/drapeaux_fr2.PNG'))
-english_button=language_button(256,128,screenx//2-256,screeny//2-128,'English',pygame.image.load('Graphism/drapeaux_en2.PNG'))
+french_button=language_button(256,128,screenx//2-512,screeny//2+128,'Français',pygame.image.load('Graphism/drapeaux_fr2.PNG').convert_alpha())
+english_button=language_button(256,128,screenx//2-256,screeny//2-128,'English',pygame.image.load('Graphism/drapeaux_en2.PNG').convert_alpha())
 button_languages=[french_button,english_button]
 button_menu=[button_language,button_control]
 while not end:
@@ -414,7 +414,7 @@ while not end:
     while not start:
         frame.tick(10)
         screen.fill([100,20, 20])
-        screen.blit(pygame.image.load('Graphism/button0.png'),(screenx//2-128,screeny//2-64))
+        screen.blit(pygame.image.load('Graphism/button0.png').convert_alpha(),(screenx//2-128,screeny//2-64))
         button_control.draw(1)
         button_language.draw(1)
         for event in pygame.event.get():
@@ -442,14 +442,14 @@ while not end:
                 soundtrack.play()
                 start=True
                 play=True
-                screen.blit(pygame.image.load('Graphism/button3.png'),(screenx//2-128,screeny//2-64))
+                screen.blit(pygame.image.load('Graphism/button3.png').convert_alpha(),(screenx//2-128,screeny//2-64))
             else:
-                screen.blit(pygame.image.load('Graphism/button2.png'),(screenx//2-128,screeny//2-64))
+                screen.blit(pygame.image.load('Graphism/button2.png').convert_alpha(),(screenx//2-128,screeny//2-64))
         pygame.display.update()
     #the game
     while play:
         frame.tick(25)
-        #print(frame)
+        print(frame)
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 play=False
@@ -539,7 +539,6 @@ while not end:
             else:
                 pirate.stand=True
             if keys[ControlOpt['shoot']]:
-                print("attack")
                 pirate.attack()
             for i in planks:
                 i.check()
