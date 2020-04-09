@@ -299,11 +299,14 @@ def Init():
                 temp=line.split(' ')
                 ControlOpt[temp[0]]=int(temp[1])
     if os.path.exists("Language"):
-        with open("Language/"+language+'.txt') as text:
-            Language["language"]=language
-            for line in text:
-                temp=line.split(' ')
-                Language[temp[0]]=temp[1].rstrip('\n')
+        if os.path.exists("Language/"+language+'.txt'):
+            with open("Language/"+language+'.txt') as text:
+                Language["language"]=language
+                for line in text:
+                    temp=line.split(' ')
+                    Language[temp[0]]=temp[1].rstrip('\n')
+        else:
+            print("Error : ",language," not found")
     else:
         print("Error : No Language directory found\nCan't load the language")
     return [ScreenOpt,ControlOpt,Language]
@@ -329,6 +332,11 @@ def load(level,plank1):
                     cps.append(cp(int(parameters[1]),int(parameters[2])))
                 elif parameters[0]=='spawn':
                     pirate.spawnpoint=[parameters[1],parameters[2]]
+
+def collide(first,second):
+    if first.x<=second.x+second.width<=first.x+first.width+second.width and first.y<=second.y+second.height<=first.y+first.height+second.height:
+        return 1
+    return 0
 
 pygame.init()
 pygame.font.init()
@@ -496,6 +504,8 @@ while not end:
                         i.x+=300-pirate.spawnpoint[0]
                     for i in prjs:
                         i.x+=300-pirate.spawnpoint[0]
+                    for i in enemies:
+                        i.x+=300-pirate.spawnpoint[0]
                     pirate.spawnpoint[0]=300
                 pirate.spdy=0
                 pirate.x=pirate.spawnpoint[0]
@@ -550,23 +560,22 @@ while not end:
             for i in planks:
                 i.check()
                 i.draw()
+            if pirate.hit()
             for i in enemies:
                 if i.life>0:
                     if i.y>screeny:
                         i.life=0
                     hitted=i.hit
                     for k in prjs:
-                        if i.x<=k.x+k.width<=i.x+i.width+k.width and i.y<=k.y+k.height<=i.y+i.height+k.height:
-                            if hitted==False:
-                                print("hitted")
-                                i.hit=True
-                                hitted=True
-                                i.life-=1
-                                print(i.life)
-                                if i.life==0:
-                                    pirate.money+=1
-                                    enemies.remove(i)
-                                    entities.remove(i)
+                        if not(hitted) and collide(i,k):
+                            i.hit=True
+                            hitted=True
+                            i.life-=1
+                            print(i.life)
+                            if i.life==0:
+                                pirate.money+=1
+                                enemies.remove(i)
+                                entities.remove(i)
                     if hitted==False or len(prjs)==0:
                         i.hit=False
                     for j in planks:
@@ -590,6 +599,11 @@ while not end:
                         i.stand=False
                         i.right=False
                         i.left=True'''
+                    hitted=pirate.hit
+                    if not(hitted) and collide(i,pirate):
+                        pirate.hit=True
+                        hitted=True
+                        pirate.life-=1
             for i in cps:
                 i.draw()
             for i in prjs:
