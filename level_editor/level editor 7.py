@@ -387,10 +387,10 @@ def save():
             working=True
     with open("Levels/"+name+'/'+'entities.txt','w+') as level:
         for plank in planks:
-            level.write('plank '+str(plank.x)+' '+str(plank.y)+' '+str(plank.h)+' '+str(plank.w)+'\n')
+            level.write('plank '+str(plank.x/screenx)+' '+str(plank.y/screeny)+' '+str(plank.h/screeny)+' '+str(plank.w/screenx)+'\n')
         for cp in cps:
-            level.write('cp '+str(cp.x)+' '+str(cp.y)+'\n')
-        level.write('spawn '+str(spawn_x)+' '+str(spawn_y))
+            level.write('cp '+str(cp.x/screenx)+' '+str(cp.y/screeny)+'\n')
+        level.write('spawn '+str(spawn_x/screenx)+' '+str(spawn_y/screeny))
     #re-blitting the entities and the bg but without the tools to have a clean preview
     screen.blit(bg,(0,0))
     for i in range(len(entities)):
@@ -460,12 +460,12 @@ def load(plank1):
             for line in  level:
                 parameters=line.split(' ')
                 if parameters[0]=='cp':
-                    chestpoint(int(parameters[1]),int(parameters[2]))
+                    chestpoint(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny))
                 elif parameters[0]=='plank':
-                    platform(int(parameters[1]),int(parameters[2]),int(parameters[3]),int(parameters[4]),plank1)
+                    platform(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),int(float(parameters[3])*screeny),int(float(parameters[4])*screenx),plank1)
                 elif parameters[0]=='spawn':
-                    spawn_x=parameters[1]
-                    spawn_y=parameters[2]
+                    spawn_x=int(float(parameters[1])*screenx)
+                    spawn_y=int(float(parameters[2])*screeny)
 
 def blit_tools():
     for i in range(5):
@@ -512,7 +512,7 @@ pygame.font.init()
 textinput = TextInput()
 font=pygame.font.Font(None,50)
 pygame.display.set_caption("Level Editor")
-screenx,screeny=1400,700
+screenx,screeny=1920,1080
 screendelta_x=screendelta_y=0
 screen=pygame.display.set_mode((screenx,screeny))
 size_tool=False

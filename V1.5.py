@@ -412,8 +412,8 @@ button_control_shoot=control_button(128,64,128,5*20+4*64,Language['shoot_control
 button_controls=[button_control_left,button_control_right,button_control_down,button_control_jump,button_control_shoot]
 
 button_language=text_button(256,128,screenx//2-512,screeny//2+128,Language['language_button'],20,128//3+20,(255,233,0))
-french_button=language_button(256,128,screenx//2-512,screeny//2+128,'Français',pygame.image.load('Graphism/drapeaux_fr2.PNG').convert_alpha())
-english_button=language_button(256,128,screenx//2-256,screeny//2-128,'English',pygame.image.load('Graphism/drapeaux_en2.PNG').convert_alpha())
+french_button=language_button(256,128,screenx//2-512,screeny//2+128,'French',pygame.image.load('Graphism/drapeaux_fr2.PNG').convert_alpha())
+english_button=language_button(256,128,screenx//2-512,screeny//2-128,'English',pygame.image.load('Graphism/drapeaux_en2.PNG').convert_alpha())
 button_languages=[french_button,english_button]
 button_menu=[button_language,button_control]
 while not end:
@@ -650,10 +650,19 @@ while not end:
         pygame.display.update()
 
     while language_setting:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                settings=False
+                end=True
+                print("quit")
+        keys=pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            print("exit")
+            language_setting=False
+            start=False
         for button in button_languages:
             button.draw()
         if pygame.mouse.get_pressed()[0]:
-            print('click')
             posX=pygame.mouse.get_pos()[0]
             posY=pygame.mouse.get_pos()[1]
             for Button in button_languages:
