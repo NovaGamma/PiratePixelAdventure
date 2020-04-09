@@ -116,7 +116,7 @@ class people(object):
         self.prj=prj
         self.cooldown=0
         self.turn=False#null
-        self.hit=False
+        self.hit=0
 
     def draw(self,hitbox=False):
         if not self.isground:
@@ -142,7 +142,6 @@ class people(object):
         screen.blit(pygame.transform.scale(self.info,(self.width,self.height)),(self.x,self.y))
         if hitbox:
             self.hitbox=(self.x,self.y,self.width,self.height)
-            self.rect_hitbox=pygame.Rect(self.x,self.y,self.width,self.height)
             pygame.draw.rect(screen,(255,0,0),self.hitbox,2)
         if self.cooldown>0:
             self.cooldown-=1
@@ -253,7 +252,6 @@ class projectile(object):
             else:
                 screen.blit(raxx[self.count%16//2],(self.x,self.y))
             self.hitbox=(self.x,self.y,self.width,self.height)
-            self.rect_hitbox=pygame.Rect(self.x,self.y,self.width,self.height)
             pygame.draw.rect(screen,(255,0,0),self.hitbox,2)
         if 0>self.x or self.x>screenx or self.y>screeny:
             prjs.remove(self)
@@ -560,24 +558,27 @@ while not end:
             for i in planks:
                 i.check()
                 i.draw()
-            if pirate.hit()
+            if pirate.hit==1:
+                pirate.hit=2
             for i in enemies:
                 if i.life>0:
                     if i.y>screeny:
                         i.life=0
-                    hitted=i.hit
+                    if i.hit==1:
+                        i.hit=2
                     for k in prjs:
-                        if not(hitted) and collide(i,k):
-                            i.hit=True
-                            hitted=True
-                            i.life-=1
-                            print(i.life)
-                            if i.life==0:
-                                pirate.money+=1
-                                enemies.remove(i)
-                                entities.remove(i)
-                    if hitted==False or len(prjs)==0:
-                        i.hit=False
+                        if collide(i,k):
+                            if i.hit==0:
+                                i.hit=1
+                                i.life-=1
+                                if i.life==0:
+                                    pirate.money+=1
+                                    enemies.remove(i)
+                                    entities.remove(i)
+                            elif i.hit==2:
+                                i.hit=1
+                    if i.hit==2:
+                        i.hit=0
                     for j in planks:
                         if j.x+i.width-10<=i.x+i.width<=j.x+j.width+10:
                             if not i.turn and i.x+i.width>=j.x+j.width:
@@ -588,7 +589,6 @@ while not end:
                                 i.turn=True
                             elif i.x+300>pirate.x>i.x and pirate.y-15<i.y<pirate.y+15:
                                 i.turn=False
-                    '''
                     if i.isground and not i.turn:
                         i.x+=10
                         i.stand=False
@@ -598,12 +598,15 @@ while not end:
                         i.x-=10
                         i.stand=False
                         i.right=False
-                        i.left=True'''
-                    hitted=pirate.hit
-                    if not(hitted) and collide(i,pirate):
-                        pirate.hit=True
-                        hitted=True
-                        pirate.life-=1
+                        i.left=True
+                    if collide(i,pirate):
+                        if pirate.hit==0:
+                            pirate.life-=1
+                            pirate.hit=1
+                        elif pirate.hit==2:
+                            pirate.hit=1
+            if pirate.hit==2:
+                pirate.hit=0
             for i in cps:
                 i.draw()
             for i in prjs:
