@@ -17,6 +17,7 @@ class button:
 
 class text_button(button):
     def __init__(self,width,height,x,y,text,posX=None,posY=None,color=None):#posX and posY are in function of the pos of the button
+        self.info=text
         if posX!=None and posY!=None:
             self.textX=posX
             self.textY=posY

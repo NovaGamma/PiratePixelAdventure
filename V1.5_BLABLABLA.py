@@ -17,6 +17,7 @@ class button:
 
 class text_button(button):
     def __init__(self,width,height,x,y,text,posX=None,posY=None,color=None):#posX and posY are in function of the pos of the button
+        self.info=text
         if posX!=None and posY!=None:
             self.textX=posX
             self.textY=posY
@@ -321,30 +322,40 @@ def Init():
 def load_save(save_name):
     if os.path.exists("Saves/"+save_name+".txt"):
         with open("Saves/"+save_name+".txt" ,'r') as saveFile:
-            pass
+            for line in saveFile:
+                temp=line.split(' ')
+                if temp[0]=='level':
+                    next_level=temp[1]
+                elif temp[0]=='money':
+                    pirate.money=int(temp[1])
+                else:
+                    print(line+" didn't load successully")
+            return next_level
     else:
         print("This save file doesn't exists")
-
+    return ''
 
 def load(level,plank1):
-    levels_name = os.listdir("Levels/")
-    name=level
-    pos=-1
-    for levels in levels_name:
-        if name==levels:
-            pos=levels_name.index(levels)
-    if pos!=-1:
-        planks=[]
-        cps=[]
-        with open("Levels/"+levels_name[pos]+'/entities.txt','r') as level:
-            for line in level:
+    print(level)
+    print(len(level))
+    path="Levels/"+level
+    print(type(path))
+    print(path!="Levels/LVL")
+    print(os.path.exists("Levels/LVL"))
+    print(os.path.exists(path))
+    if os.path.exists("Levels/"+level):
+        with open("Levels/"+level+'/entities.txt','r') as levelFile:
+            print("loading : "+level)
+            for line in levelFile:
                 parameters=line.split(' ')
                 if parameters[0]=='plank':
-                    planks.append(platform(int(parameters[1]),int(parameters[2]),int(parameters[3]),int(parameters[4]),plank1))
+                    platform(int(parameters[1]),int(parameters[2]),int(parameters[3]),int(parameters[4]),plank1)
                 elif parameters[0]=='cp':
-                    cps.append(cp(int(parameters[1]),int(parameters[2])))
+                    cp(int(parameters[1]),int(parameters[2]))
                 elif parameters[0]=='spawn':
-                    pirate.spawnpoint=[parameters[1],parameters[2]]
+                    pirate.spawnpoint=[int(parameters[1]),int(parameters[2])]
+    else:
+        print("Level not found")
 
 def collide(first,second):
     if first.x<=second.x+second.width<=first.x+first.width+second.width and first.y<=second.y+second.height<=first.y+first.height+second.height:
@@ -425,7 +436,6 @@ for a in range(0,500,50):
     ennemy(350+2*a,screeny//2-50-3*a,128,96,1,2)
 
 plank_texture=pygame.image.load('Graphism/plank1.png').convert_alpha()
-load('LVL',plank_texture)
 #creating all the buttons
 button_setting=image_button(256,128,screenx//2-128,screeny//2-64,pygame.image.load('Graphism/button0.png').convert_alpha())
 button_control=text_button(256,128,screenx//2-128,screeny//2+128,Language['control_button'],20,128//3+20,(255,233,0))
@@ -466,48 +476,49 @@ while not end:
         for button in button_menu:
             if button.collide(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]):
                 if pygame.mouse.get_pressed()[0]:
-                    print(button.name)
                     if button.name==Language['control_button']:
                         control_setting=True
                     elif button.name==Language['language_button']:
                         language_setting=True
-                        print('True')
                     start=True
         if screenx//2-128<=pygame.mouse.get_pos()[0]<=screenx//2+128 and screeny//2-64<pygame.mouse.get_pos()[1]<screeny//2+64:
             if pygame.mouse.get_pressed()[0]:
                 choose_save=True
                 start=True
-                '''
-                load_lvl1()
-                pygame.mixer.stop()
-                buttonsound.play()
-                soundtrack.play()
-                play=True'''
+                clicking=True
                 screen.blit(pygame.image.load('Graphism/button3.png').convert_alpha(),(screenx//2-128,screeny//2-64))
             else:
                 screen.blit(pygame.image.load('Graphism/button2.png').convert_alpha(),(screenx//2-128,screeny//2-64))
         pygame.display.update()
 
     while choose_save:
+        if not(pygame.mouse.get_pressed()[0]):
+            clicking=False
         screen.fill([100,20, 20])
         for button in button_save:
             button.draw(1)
             if button.collide(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]):
-                if pygame.mouse.get_pressed()[0]:
-                    print("choosed : "+button.text)
-                    load_save(button.text)
-                    pygame.mixer.stop()
-                    buttonsound.play()
-                    soundtrack.play()
-                    play=True
+                if pygame.mouse.get_pressed()[0] and not(clicking):
+                    print("choosed : "+button.info)
+                    next_level=load_save(button.info)
+                    if next_level!='':
+                        print(planks)
+                        load(next_level,plank_texture)
+                        print(planks)
+                        pygame.mixer.stop()
+                        buttonsound.play()
+                        soundtrack.play()
+                        play=True
+                        choose_save=False
+                    else:
+                        print('Wow such empty')
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 choose_save=False
                 end=True
-            if event.type==pygame.KEYDOWN and pygame.event.key==pygame.K_ESCAPE:
+            if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
                 choose_save=False
                 start=False
-
         pygame.display.update()
 
     #the game
