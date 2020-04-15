@@ -148,6 +148,14 @@ class people(object):
         if self.cooldown>0:
             self.cooldown-=1
 
+    def direction(self):
+        if self.right:
+            return 'right'
+        elif self.left:
+            return 'left'
+        else:
+            return 'None'
+
 class ennemy(people):
     def __init__(self,x,y,height,width,mass,health):
         people.__init__(self,x,y,height,width,mass,health)
@@ -263,16 +271,12 @@ class projectile(object):
             prjs.remove(self)
         self.count+=1
 
-def load_lvl1():
-    #set pos of pirate
+def reset_player():
     pirate.life=3
-    pirate.x=300
-    pirate.y=screeny//2
     pirate.spdy=0
     pirate.spdx=0
     pirate.isjump=0
     pirate.isground=1
-    pirate.spawnpoint=[300,screeny//2]
 
 def SaveOption():
     if not os.path.exists('Config'):
@@ -325,7 +329,7 @@ def load_save(save_name):
             for line in saveFile:
                 temp=line.split(' ')
                 if temp[0]=='level':
-                    next_level=temp[1]
+                    next_level=temp[1].rstrip("\n")
                 elif temp[0]=='money':
                     pirate.money=int(temp[1])
                 else:
@@ -336,24 +340,19 @@ def load_save(save_name):
     return ''
 
 def load(level,plank1):
-    print(level)
-    print(len(level))
-    path="Levels/"+level
-    print(type(path))
-    print(path!="Levels/LVL")
-    print(os.path.exists("Levels/LVL"))
-    print(os.path.exists(path))
     if os.path.exists("Levels/"+level):
         with open("Levels/"+level+'/entities.txt','r') as levelFile:
             print("loading : "+level)
             for line in levelFile:
                 parameters=line.split(' ')
                 if parameters[0]=='plank':
-                    platform(int(parameters[1]),int(parameters[2]),int(parameters[3]),int(parameters[4]),plank1)
+                        platform(int(parameters[1]),int(parameters[2]),int(parameters[3]),int(parameters[4]),plank1)
                 elif parameters[0]=='cp':
-                    cp(int(parameters[1]),int(parameters[2]))
+                        cp(int(parameters[1]),int(parameters[2]))
                 elif parameters[0]=='spawn':
                     pirate.spawnpoint=[int(parameters[1]),int(parameters[2])]
+                elif parameters[0]=='ennemy':
+                    pass
     else:
         print("Level not found")
 
@@ -502,9 +501,13 @@ while not end:
                     print("choosed : "+button.info)
                     next_level=load_save(button.info)
                     if next_level!='':
-                        print(planks)
+                        planks=[]
+                        cps=[]
+                        prjs=[]
+                        '''enemies=[]
+                        entities=[pirate]'''
                         load(next_level,plank_texture)
-                        print(planks)
+                        reset_player()
                         pygame.mixer.stop()
                         buttonsound.play()
                         soundtrack.play()
@@ -666,6 +669,11 @@ while not end:
                     if pirate.hit==0:
                         pirate.life-=1
                         pirate.hit=1
+                        if i.direction=='left':
+                            pirate.spdx-=10
+                        elif i.direction=='right':
+                            pirate.spdx+=10
+                        pirate.spdy+=10
                     elif pirate.hit==2:
                         pirate.hit=1
             if pirate.hit==2:
@@ -681,6 +689,10 @@ while not end:
                 i.health_bar()
             health_draw()
             screen.blit(parawheel,(screenx-64,0))
+            if pirate.life==0:
+                play=False
+                start=False
+
         pygame.display.update()
 
     while settings:

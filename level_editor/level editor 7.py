@@ -512,7 +512,7 @@ pygame.font.init()
 textinput = TextInput()
 font=pygame.font.Font(None,50)
 pygame.display.set_caption("Level Editor")
-screenx,screeny=1920,1080
+screenx,screeny=1400,700
 screendelta_x=screendelta_y=0
 screen=pygame.display.set_mode((screenx,screeny))
 size_tool=False
