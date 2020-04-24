@@ -538,6 +538,7 @@ end=False
 creating=False
 screen_moving=False
 entities=[]
+ennemies=[]
 planks=[]
 cps=[]
 undo=[]

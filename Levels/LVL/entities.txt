@@ -4,3 +4,4 @@ plank 1535 552 47 282
 plank 1929 392 43 290
 cp 1990 265
 spawn 300 300
+ennemy 500 300 axe

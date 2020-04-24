@@ -156,8 +156,8 @@ class people(object):#the class used to define the entities such as ennemies or 
             return 'None'
 
 class ennemy(people):#the class defining ennemies, using the people class
-    def __init__(self,x,y,height,width,mass,health):
-        people.__init__(self,x,y,height,width,mass,health)
+    def __init__(self,x,y,height,width,mass,health,prj):
+        people.__init__(self,x,y,height,width,mass,health,prj)
         enemies.append(self)
         self.turn=False#null
 
@@ -364,15 +364,15 @@ def load(level,plank1):
             for line in levelFile:
                 parameters=line.split(' ')
                 if parameters[0]=='plank':
-                        platform(int(parameters[1]),int(parameters[2]),int(parameters[3]),int(parameters[4]),plank1)
+                    platform(int(parameters[1]),int(parameters[2]),int(parameters[3]),int(parameters[4]),plank1)
                 elif parameters[0]=='cp':
-                        cp(int(parameters[1]),int(parameters[2]))
+                    cp(int(parameters[1]),int(parameters[2]))
                 elif parameters[0]=='spawn':
                     pirate.spawnpoint=[int(parameters[1]),int(parameters[2])]
                     pirate.x=int(parameters[1])
                     pirate.y=int(parameters[2])
                 elif parameters[0]=='ennemy':
-                    pass
+                    ennemy(int(parameters[1]),int(parameters[2]),128,96,1,2,parameters[3])
     else:
         print("Level not found")
 
@@ -449,9 +449,10 @@ cps=[]
 prjs=[]
 enemies=[]
 entities=[]
-pirate=player(300,screeny//2,128,96,1,3,'axe')
+pirate=player(300,screeny//2,128,96,5,3,'axe')
+'''
 for a in range(0,500,50):
-    ennemy(350+2*a,screeny//2-50-3*a,128,96,1,2)
+    ennemy(350+2*a,screeny//2-50-3*a,128,96,1,2)'''
 
 plank_texture=pygame.image.load('Graphism/plank1.png').convert_alpha()
 #creating all the buttons
@@ -549,7 +550,7 @@ while not end:
     pause=False
     while play:
         frame.tick(60)
-        #print(frame)
+        print(frame)
         if frame_per_frame:
             frame.tick(1)
         if pause:
