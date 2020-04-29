@@ -295,15 +295,15 @@ def load(level,plank1):
             for line in levelFile:
                 parameters=line.split(' ')
                 if parameters[0]=='plank':
-                    platform(int(parameters[1]),int(parameters[2]),int(parameters[3]),int(parameters[4]),plank1)
+                    platform(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),int(float(parameters[3])*screeny),int(float(parameters[4])*screenx),plank1)
                 elif parameters[0]=='cp':
-                    cp(int(parameters[1]),int(parameters[2]))
+                    cp(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny))
                 elif parameters[0]=='spawn':
-                    pirate.spawnpoint=[int(parameters[1]),int(parameters[2])]
-                    pirate.x=int(parameters[1])
-                    pirate.y=int(parameters[2])
+                    pirate.spawnpoint=[int(float(parameters[1])*screenx),int(float(parameters[2])*screeny)]
+                    pirate.x=pirate.spawnpoint[0]
+                    pirate.y=pirate.spawnpoint[1]
                 elif parameters[0]=='ennemy':
-                    ennemy(int(parameters[1]),int(parameters[2]),128,96,1,2,parameters[3])
+                    ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),128,96,1,2,parameters[3])
     else:
         print("Level not found")
 

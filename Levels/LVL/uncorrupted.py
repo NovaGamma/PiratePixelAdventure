@@ -8,7 +8,7 @@ if os.path.exists("entities.txt"):
         if temp[0]=='plank':
             txt.append(temp[0]+' '+str(float(int(temp[1])/1400))+' '+str(float(int(temp[2])/700))+' '+str(float(int(temp[3])/700))+' '+str(float(int(temp[4])/1400))+'\n')
         elif temp[0]=='ennemy':
-            txt.append(temp[0]+' '+str(float(int(temp[1])/1400))+' '+str(float(int(temp[2])/700))+' '+temp[3]+'\n')
+            txt.append(temp[0]+' '+str(float(int(temp[1])/1400))+' '+str(float(int(temp[2])/700))+temp[3]+'\n')
         else:
             txt.append(temp[0]+' '+str(float(int(temp[1])/1400))+' '+str(float(int(temp[2])/700))+'\n')
     levelFile.close()
