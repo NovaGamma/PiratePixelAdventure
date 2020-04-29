@@ -7,3 +7,4 @@ down_control_button down
 shoot_control_button shoot
 language_button LANGUAGE
 level_editor_button Editor
+button_load_levels Load

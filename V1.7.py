@@ -222,6 +222,65 @@ class projectile(object):
             prjs.remove(self)
         self.count+=1
 
+def display_levels(plank1):
+    fond=pygame.Surface((screenx,screeny))
+    fond.fill((102,0,0))
+    fond.set_alpha(150)
+    rect=pygame.Surface((325,105))
+    rect.fill((179, 179, 179))
+    rect.set_alpha(180)
+    choosed=False
+    lvl_button=[]
+    try:
+        levels_name = os.listdir("Levels/")
+    except:
+        os.mkdir('Levels')
+        levels_name = os.listdir("Levels/")
+    i=0
+    j=0
+    screen.blit(fond, (0,0))
+    if len(levels_name)!=0:
+        for level in levels_name:
+            lvl_button.append(level_button(325,105,30+i*(325+15),30+j*(105+25),level,pygame.transform.scale(pygame.image.load("Levels/"+level+'/level_preview.PNG'),(50,50))))
+            i+=1
+            if i==4:
+                j+=1
+                i=0
+        for button in lvl_button:
+            button.draw(screen)
+        pygame.display.update()
+        while not(choosed):
+            mousepress=pygame.mouse.get_pressed()
+            mousepos=pygame.mouse.get_pos()
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    return True
+                if mousepress[0]:
+                    for button in lvl_button:
+                        if button.collide(mousepos[0],mousepos[1]):
+                            name=button.name
+                            choosed=True
+    else:
+        txt=font.render('NO LEVEL FOUND',0,(255,255,255))
+        screen.blit(txt,(2*(screenx//5),screeny//2))
+        pygame.display.update()
+        mouse=pygame.mouse.get_pressed()
+        mousepress=False
+        while not(mousepress):
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse=pygame.mouse.get_pressed()
+                if event.type == pygame.QUIT:
+                    return True
+            if mouse[0] or mouse[1]:
+                mousepress=True
+    pos=-1
+    for levels in levels_name:
+        if name==levels:
+            pos=levels_name.index(levels)
+    if pos!=-1:
+        load(levels_name[pos],plank1)
+
 def reset_player():
     pirate.life=3
     pirate.spdy=0
@@ -343,6 +402,7 @@ control_setting=False
 language_setting=False
 level_editor=False
 choose_save=False
+load_levels=False
 g=9.81
 #loading textures
 jumpright=[pygame.image.load('Graphism/jumpright0.png').convert_alpha(),pygame.image.load('Graphism/jumpright1.png').convert_alpha(),pygame.image.load('Graphism/jumpright2.png').convert_alpha()]
@@ -400,11 +460,12 @@ button_control_shoot=control_button(128,64,128,5*20+4*64,Language['shoot_control
 button_controls=[button_control_left,button_control_right,button_control_down,button_control_jump,button_control_shoot]
 
 button_level_editor=text_button(256,128,0,0,Language['level_editor_button'],20,128//3+20,(255,233,0))
+button_load_levels=text_button(256,128,0,128,Language['button_load_levels'],20,128//3+20,(255,233,0))
 button_language=text_button(256,128,screenx//2-512,screeny//2+128,Language['language_button'],20,128//3+20,(255,233,0))
 french_button=language_button(256,128,screenx//2-512,screeny//2+128,'French',pygame.image.load('Graphism/drapeaux_fr2.PNG').convert_alpha())
 english_button=language_button(256,128,screenx//2-512,screeny//2-128,'English',pygame.image.load('Graphism/drapeaux_en2.PNG').convert_alpha())
 button_languages=[french_button,english_button]
-button_menu=[button_language,button_control,button_level_editor]
+button_menu=[button_language,button_control,button_level_editor,button_load_levels]
 
 #load saves
 button_save_1=text_button(screenx/3-3*10, screeny-20, 10, 10, 'File 1',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
@@ -435,6 +496,10 @@ while not end:
                         language_setting=True
                     elif button.name==Language['level_editor_button']:
                         level_editor=True
+                    elif button.name==Language['button_load_levels']:
+                        load_levels=True
+                        display_levels(plank_texture)
+                        play=True
                     start=True
         if screenx//2-128<=pygame.mouse.get_pos()[0]<=screenx//2+128 and screeny//2-64<pygame.mouse.get_pos()[1]<screeny//2+64:
             if pygame.mouse.get_pressed()[0]:
