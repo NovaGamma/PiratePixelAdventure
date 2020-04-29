@@ -724,9 +724,10 @@ while not end:
                     SaveOption()
         pygame.display.update()
 
-    while level_editor:
+    if level_editor:
         pygame.display.set_caption("Level Editor")
         print("level editor")
         main(screen)
+        level_editor=False
 
 pygame.quit()
