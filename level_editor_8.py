@@ -465,7 +465,9 @@ def main(scren):
         mousepos=pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
-                end=True
+                return None
+        if keys[pygame.K_ESCAPE]:
+            return screen
         if keys[pygame.K_2]:
             tools['size']=True
             tools['move']=False

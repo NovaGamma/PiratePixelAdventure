@@ -727,7 +727,8 @@ while not end:
     if level_editor:
         pygame.display.set_caption("Level Editor")
         print("level editor")
-        main(screen)
+        screen=main(screen)
         level_editor=False
+        start=False
 
 pygame.quit()
