@@ -51,12 +51,22 @@ class text_button(button):#defining the text button class, a button that will us
         screen.blit(self.text,(self.x+self.textX,self.y+self.textY))#otherwise putting the text at the intended position
 
 class image_button(button):
-    def __init__(self,width,height,x,y,image):
+    def __init__(self,width=0,height=0,x=0,y=0,image=None,posX=0,posY=0,r=0):
+        if image==None:
+            raise Exception("No image given for the button")
         self.image=image
+        self.posX=posX
+        self.posY=posY
+        self.r=r
         button.__init__(self,height,width,x,y)
-
+        self.rect=pygame.Surface((width,height))
+        self.rect.fill((115,54,0))
+        self.rect.set_alpha(180)
     def draw(self,screen):
-        screen.blit(self.image,(self.x,self.y))
+        if self.r:
+            screen.blit(self.rect,(self.x,self.y))
+        screen.blit(self.image,(self.x+self.posX,self.y+self.posY))
+
 
 class control_button(text_button):#here control button is a text button but with other functionnalities
     def __init__(self,width,height,x,y,text,posX=0,posY=0,color=None):

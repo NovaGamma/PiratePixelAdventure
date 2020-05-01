@@ -8,3 +8,4 @@ shoot_control_button tirer
 language_button LANGUE
 level_editor_button Editeur
 button_load_levels Charger
+button_continue Continuer

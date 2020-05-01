@@ -294,7 +294,8 @@ def SaveOption():
         for key in ScreenOpt.keys():
             temp=key+' '+str(ScreenOpt[key])+'\n'
             optionFile.write(temp)
-        optionFile.write('language '+Language["language"])
+        optionFile.write('language '+Language["language"]+'\n')
+        optionFile.write('last_save '+last_save+'\n')
     with open("Config/Controls.txt", "w+") as controlFile:
         for key in ControlOpt.keys():
             temp=key+' '+str(ControlOpt[key])+'\n'
@@ -307,11 +308,15 @@ def Init():
         with open("Config/Game_Option.txt", "r") as optionFile:
             for line in optionFile:
                 temp=line.split(' ')
-                if not(temp[0]=="language"):
-                    ScreenOpt[temp[0]]=int(temp[1])
+                print(temp[0])
+                if temp[0]=="last_save":
+                    last_save=temp[1].rstrip('\n')
+                elif temp[0]=="language":
+                    language=temp[1].rstrip('\n')
                 else:
-                    language=temp[1]
+                    ScreenOpt[temp[0]]=int(temp[1])
         print(ScreenOpt)
+        print(language)
         with open("Config/Controls.txt", "r") as controlFile:
             for line in controlFile:
                 temp=line.split(' ')
@@ -324,10 +329,10 @@ def Init():
                     temp=line.split(' ')
                     Language[temp[0]]=temp[1].rstrip('\n')
         else:
-            print("Error : ",language," not found")
+            raise Exception("Error : ",language," not found")
     else:
-        print("Error : No Language directory found\nCan't load the language")
-    return [ScreenOpt,ControlOpt,Language]
+        raise Exception("Error : No Language directory found\nCan't load the language")
+    return [ScreenOpt,ControlOpt,Language,last_save]
     if not(os.path.exists("Graphism")):
         os.mkdir('Graphism')
 
@@ -341,10 +346,10 @@ def load_save(save_name):
                 elif temp[0]=='money':
                     pirate.money=int(temp[1])
                 else:
-                    print(line+" didn't load successully")
+                    raise Exception(line+" didn't load successully")
             return next_level
     else:
-        print("This save file doesn't exists")
+        raise Exception("Try to open a non-existing save file : "+save_name)
     return ''
 
 def load(level,plank1):
@@ -371,6 +376,21 @@ def collide(first,second):
         return 1
     return 0
 
+def level_editor_unlocked(last_save):
+    if os.path.exists("Saves/"+last_save+'.txt'):
+        with open("Saves/"+last_save+'.txt','r') as SaveFile:
+            for line in SaveFile:
+                temp=line.split(' ')
+                if temp[0]=='level_editor':
+                    if temp[1]=='True':
+                        return True
+                    else:
+                        return False
+    else:
+        return False
+
+
+
 pygame.init()
 pygame.font.init()
 font=pygame.font.Font(None,50)
@@ -381,6 +401,10 @@ Options=Init()
 ScreenOpt=Options[0]
 ControlOpt=Options[1]
 Language=Options[2]
+if Options[3]==None:
+    last_save="None"
+else:
+    last_save=Options[3]
 print(ScreenOpt)
 print(ControlOpt)
 screenx=ScreenOpt['screenX']
@@ -459,13 +483,21 @@ button_control_down=control_button(128,64,128,4*20+3*64,Language['down_control_b
 button_control_shoot=control_button(128,64,128,5*20+4*64,Language['shoot_control_button'],0,0,(255,233,0))
 button_controls=[button_control_left,button_control_right,button_control_down,button_control_jump,button_control_shoot]
 
-button_level_editor=text_button(256,128,0,0,Language['level_editor_button'],20,128//3+20,(255,233,0))
-button_load_levels=text_button(256,128,0,128,Language['button_load_levels'],20,128//3+20,(255,233,0))
+if last_save=='None':
+    button_continue=text_button(256,128,screenx//3,0,Language['button_continue'],20,128//3+20,(155,133,0))
+else:
+    button_continue=text_button(256,128,screenx//3,0,Language['button_continue'],20,128//3+20,(255,233,0))
+if level_editor_unlocked(last_save):
+    button_level_editor=text_button(256,128,0,0,Language['level_editor_button'],20,128//3+20,(255,233,0))
+    button_load_levels=text_button(256,128,0,128,Language['button_load_levels'],20,128//3+20,(255,233,0))
+else:
+    button_level_editor=image_button(256,128,0,0,pygame.transform.scale(pygame.image.load("Graphism/lock.png").convert_alpha(),(64,64)),96,32,1)
+    button_load_levels=text_button()#creating an empty button for the button menu to load it even if we don't wont to display it
 button_language=text_button(256,128,screenx//2-512,screeny//2+128,Language['language_button'],20,128//3+20,(255,233,0))
 french_button=language_button(256,128,screenx//2-512,screeny//2+128,'French',pygame.image.load('Graphism/drapeaux_fr2.PNG').convert_alpha())
 english_button=language_button(256,128,screenx//2-512,screeny//2-128,'English',pygame.image.load('Graphism/drapeaux_en2.PNG').convert_alpha())
 button_languages=[french_button,english_button]
-button_menu=[button_language,button_control,button_level_editor,button_load_levels]
+button_menu=[button_language,button_control,button_level_editor,button_load_levels,button_continue]
 
 #load saves
 button_save_1=text_button(screenx/3-3*10, screeny-20, 10, 10, 'File 1',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
