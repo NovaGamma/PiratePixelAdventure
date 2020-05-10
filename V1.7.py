@@ -346,7 +346,8 @@ def load_save(save_name):
                 elif temp[0]=='money':
                     pirate.money=int(temp[1])
                 else:
-                    raise Exception(line+" didn't load successully")
+                    if temp[0]!='level_editor':
+                        raise Exception(line+" didn't load successully")
             return next_level
     else:
         raise Exception("Try to open a non-existing save file : "+save_name)
@@ -369,7 +370,7 @@ def load(level,plank1):
                 elif parameters[0]=='ennemy':
                     ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),128,96,1,2,parameters[3])
     else:
-        print("Level not found")
+        raise Exception("Level not found")
 
 def collide(first,second):
     if first.x<=second.x+second.width<=first.x+first.width+second.width and first.y<=second.y+second.height<=first.y+first.height+second.height:
@@ -377,9 +378,12 @@ def collide(first,second):
     return 0
 
 def level_editor_unlocked(last_save):
+    print(last_save)
     if os.path.exists("Saves/"+last_save+'.txt'):
+        print("Yay")
         with open("Saves/"+last_save+'.txt','r') as SaveFile:
             for line in SaveFile:
+                print(line)
                 temp=line.split(' ')
                 if temp[0]=='level_editor':
                     if temp[1]=='True':
@@ -500,9 +504,9 @@ button_languages=[french_button,english_button]
 button_menu=[button_language,button_control,button_level_editor,button_load_levels,button_continue]
 
 #load saves
-button_save_1=text_button(screenx/3-3*10, screeny-20, 10, 10, 'File 1',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
-button_save_2=text_button(screenx/3-3*10, screeny-20, 10+screenx/3-2*10, 10, 'File 2',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
-button_save_3=text_button(screenx/3-3*10, screeny-20, 10+2*(screenx/3-10), 10, 'File 3',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
+button_save_1=text_button(screenx/3-3*10, screeny-20, 10, 10, 'File1',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
+button_save_2=text_button(screenx/3-3*10, screeny-20, 10+screenx/3-2*10, 10, 'File2',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
+button_save_3=text_button(screenx/3-3*10, screeny-20, 10+2*(screenx/3-10), 10, 'File3',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
 button_save=[button_save_1,button_save_2,button_save_3]
 
 while not end:
