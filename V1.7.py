@@ -380,7 +380,6 @@ def collide(first,second):
 def level_editor_unlocked(last_save):
     print(last_save)
     if os.path.exists("Saves/"+last_save+'.txt'):
-        print("Yay")
         with open("Saves/"+last_save+'.txt','r') as SaveFile:
             for line in SaveFile:
                 print(line)

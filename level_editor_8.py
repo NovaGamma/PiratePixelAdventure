@@ -166,12 +166,12 @@ class platform(object):#defining the class to create platforms
     def __init__(self,x,y,h,w,img):#init method to get all the requirement such as the position x and y the size (height and width) and the texture of the platforms
         self.x=x-screendelta_x#getting x
         self.y=y-screendelta_y#getting y
-        self.h=h#getting the height
-        self.w=w#getting the width
-        if self.w==0 or self.h==0:
-            self.img=pygame.transform.scale(img,(self.w+1,self.h+1))
+        self.height=h#getting the height
+        self.width=w#getting the width
+        if self.width==0 or self.height==0:
+            self.img=pygame.transform.scale(img,(self.width+1,self.height+1))
         else:
-            self.img=pygame.transform.scale(img,(self.w,self.h))#rescaling the texture according to the size of the platform
+            self.img=pygame.transform.scale(img,(self.width,self.height))#rescaling the texture according to the size of the platform
         self.touched=False
         self.right=False
         self.left=False
@@ -181,34 +181,34 @@ class platform(object):#defining the class to create platforms
         entities.insert(0,self)#adding the platform to the list of all entities at the first pos to know that this is the last one that we added
     def draw(self):#defining the draw method of the class
         screen.blit(self.img,(self.x+screendelta_x,self.y+screendelta_y))
-        if not tools['cp'] and not tools['spawn'] and (self==entities[0] or not mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.w and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.h and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].w or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].h)):
-            screen.blit(pygame.transform.scale(black,(self.w,4)),(self.x+screendelta_x,self.y+screendelta_y))
-            screen.blit(pygame.transform.scale(black,(self.w,4)),(self.x+screendelta_x,self.y+screendelta_y+self.h-4))
-            screen.blit(pygame.transform.scale(black,(4,self.h)),(self.x+screendelta_x,self.y+screendelta_y))
-            screen.blit(pygame.transform.scale(black,(4,self.h)),(self.x+screendelta_x+self.w-4,self.y+screendelta_y))
-            if tools['size'] and (self.touched or self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.w and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.h and (entities[0]==self or entities[0].touched==False and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].w or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].h))):
+        if not tools['cp'] and not tools['spawn'] and not tools['ennemie'] and (self==entities[0] or not mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].w or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].h)):
+            screen.blit(pygame.transform.scale(black,(self.width,4)),(self.x+screendelta_x,self.y+screendelta_y))
+            screen.blit(pygame.transform.scale(black,(self.width,4)),(self.x+screendelta_x,self.y+screendelta_y+self.height-4))
+            screen.blit(pygame.transform.scale(black,(4,self.height)),(self.x+screendelta_x,self.y+screendelta_y))
+            screen.blit(pygame.transform.scale(black,(4,self.height)),(self.x+screendelta_x+self.width-4,self.y+screendelta_y))
+            if tools['size'] and (self.touched or self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0]==self or entities[0].touched==False and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].w or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].h))):
                 if self.up and self.right:
                     screen.blit(arrow_leftup,(self.x+screendelta_x,self.y+screendelta_y))
                 elif self.up and not self.right:
-                    screen.blit(arrow_rightup,(self.x+screendelta_x+self.w-64,self.y+screendelta_y))
+                    screen.blit(arrow_rightup,(self.x+screendelta_x+self.width-64,self.y+screendelta_y))
                 elif not self.up and not self.right:
-                    screen.blit(arrow_rightdown,(self.x+screendelta_x+self.w-64,self.y+screendelta_y+self.h-64))
+                    screen.blit(arrow_rightdown,(self.x+screendelta_x+self.width-64,self.y+screendelta_y+self.height-64))
                 elif not self.up and self.right:
-                    screen.blit(arrow_leftdown,(self.x+screendelta_x,self.y+screendelta_y+self.h-64))
+                    screen.blit(arrow_leftdown,(self.x+screendelta_x,self.y+screendelta_y+self.height-64))
             if tools['move'] and self==entities[0]:
-                screen.blit(pointed,(self.x+screendelta_x+self.w//2-8,self.y+screendelta_y+self.h//2-8))
+                screen.blit(pointed,(self.x+screendelta_x+self.width//2-8,self.y+screendelta_y+self.height//2-8))
     def check(self):
-        if (self.h<=1 or self.w<=1) and not mousepress[0]:
+        if (self.height<=1 or self.width<=1) and not mousepress[0]:
             planks.remove(self)
             entities.remove(self)
         if tools['size']:
-            if self.touched or self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.w and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.h:
+            if self.touched or self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height:
                 if not self.touched:
-                    if self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.w/2:
+                    if self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width/2:
                         self.right=False
                     else:
                         self.right=True
-                    if self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.h/2:
+                    if self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height/2:
                         self.up=False
                     else:
                         self.up=True
@@ -217,28 +217,28 @@ class platform(object):#defining the class to create platforms
                 elif not mousepress[0]:
                     self.touched=False
             if self.touched:
-                if self.h+mousedelta[1]>0 and self.up:
-                    self.h+=mousedelta[1]
-                elif mousedelta[1]<0 or self.h-mousedelta[1]>0:
+                if self.height+mousedelta[1]>0 and self.up:
+                    self.height+=mousedelta[1]
+                elif mousedelta[1]<0 or self.height-mousedelta[1]>0:
                     self.up=False
-                    self.h-=mousedelta[1]
+                    self.height-=mousedelta[1]
                     self.y+=mousedelta[1]
                 else:
                     self.up=True
-                if self.w+mousedelta[0]>0 and self.right:
-                    self.w+=mousedelta[0]
-                elif mousedelta[0]<0 or self.w-mousedelta[0]>0:
+                if self.width+mousedelta[0]>0 and self.right:
+                    self.width+=mousedelta[0]
+                elif mousedelta[0]<0 or self.width-mousedelta[0]>0:
                     self.right=False
-                    self.w-=mousedelta[0]
+                    self.width-=mousedelta[0]
                     self.x+=mousedelta[0]
                 else:
                     self.right=True
-                if self.w==0 or self.h==0:
-                    self.img=pygame.transform.scale(self.img,(self.w+1,self.h+1))
+                if self.width==0 or self.height==0:
+                    self.img=pygame.transform.scale(self.img,(self.width+1,self.height+1))
                 else:
-                    self.img=pygame.transform.scale(self.img,(self.w,self.h))
+                    self.img=pygame.transform.scale(self.img,(self.width,self.height))
 
-        if not self.touched and mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.w and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.h:
+        if not self.touched and mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height:
             self.touched=True
         if self.touched and tools['move']:
             self.x+=mousedelta[0]
@@ -250,23 +250,55 @@ class chestpoint(object):
     def __init__(self,x,y):
         self.x=x-screendelta_x
         self.y=y-screendelta_y
-        self.w=128
-        self.h=128
+        self.width=128
+        self.height=128
         self.touched=False
         self.img=chest_texture
         entities.insert(0,self)
         cps.append(self)
+
     def draw(self):
         screen.blit(self.img,(self.x+screendelta_x,self.y+screendelta_y))
-        if not tools['cp'] and not tools['spawn'] and (self==entities[0] or not mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.w and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.h and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].w or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].h)):
+        if not tools['cp'] and not tools['spawn'] and not tools['ennemie'] and (self==entities[0] or not mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].w or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].h)):
             screen.blit(pygame.transform.scale(black,(128,4)),(self.x+screendelta_x,self.y+screendelta_y))
             screen.blit(pygame.transform.scale(black,(128,4)),(self.x+screendelta_x,self.y+screendelta_y+128-4))
             screen.blit(pygame.transform.scale(black,(4,128)),(self.x+screendelta_x,self.y+screendelta_y))
             screen.blit(pygame.transform.scale(black,(4,128)),(self.x+screendelta_x+128-4,self.y+screendelta_y))
         if tools['move'] and self==entities[0]:
-            screen.blit(pointed,(self.x+screendelta_x+self.w//2-8,self.y+screendelta_y+self.h//2-8))
+            screen.blit(pointed,(self.x+screendelta_x+self.width//2-8,self.y+screendelta_y+self.height//2-8))
+
     def check(self):
-        if not self.touched and mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.w and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.h:
+        if not self.touched and mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height:
+            self.touched=True
+        if self.touched and tools['move']:
+            self.x+=mousedelta[0]
+            self.y+=mousedelta[1]
+        if self.touched and not mousepress[0]:
+            self.touched=False
+
+class ennemy(object):
+    def __init__(self,x,y):
+        self.x=x
+        self.y=y
+        self.width=
+        self.height
+        self.touched=False
+        self.img=ennemy_texture
+        entities.insert(0,self)
+        ennemies.append(self)
+
+    def draw(self):
+        screen.blit(self.img,(self.x+screendelta_x,self.y+screendelta_y))
+        if not tools['cp'] and not tools['spawn'] and not tools['ennemie'] and (self==entities[0] or not mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].w or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].h)):
+            screen.blit(pygame.transform.scale(black,(128,4)),(self.x+screendelta_x,self.y+screendelta_y))
+            screen.blit(pygame.transform.scale(black,(128,4)),(self.x+screendelta_x,self.y+screendelta_y+128-4))
+            screen.blit(pygame.transform.scale(black,(4,128)),(self.x+screendelta_x,self.y+screendelta_y))
+            screen.blit(pygame.transform.scale(black,(4,128)),(self.x+screendelta_x+128-4,self.y+screendelta_y))
+        if tools['move'] and self==entities[0]:
+            screen.blit(pointed,(self.x+screendelta_x+self.width//2-8,self.y+screendelta_y+self.height//2-8))
+
+    def check(self):
+        if not self.touched and mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height:
             self.touched=True
         if self.touched and tools['move']:
             self.x+=mousedelta[0]
@@ -326,7 +358,7 @@ def save():
             working=True
     with open("Levels/"+name+'/'+'entities.txt','w+') as level:
         for plank in planks:
-            level.write('plank '+str(plank.x/screenx)+' '+str(plank.y/screeny)+' '+str(plank.h/screeny)+' '+str(plank.w/screenx)+'\n')
+            level.write('plank '+str(plank.x/screenx)+' '+str(plank.y/screeny)+' '+str(plank.height/screeny)+' '+str(plank.width/screenx)+'\n')
         for cp in cps:
             level.write('cp '+str(cp.x/screenx)+' '+str(cp.y/screeny)+'\n')
         level.write('spawn '+str(spawn_x/screenx)+' '+str(spawn_y/screeny))
@@ -449,7 +481,7 @@ def ask():
 def main(scren):
     global screen
     screen=scren
-    global end,tools,creating,spawn_x,spawn_y,screendelta_x,screendelta_y,mousepress,mousedelta,mousepos,entities,ennemies,planks,cps,undo,redo,clipboard
+    global end,tools,creating,spawning,spawn_x,spawn_y,screendelta_x,screendelta_y,mousepress,mousedelta,mousepos,entities,ennemies,planks,cps,undo,redo,clipboard
     del_cooldown=True
     undo_cooldown=True
     redo_cooldown=True
@@ -474,30 +506,42 @@ def main(scren):
             tools['place']=False
             tools['cp']=False
             tools['spawn']=False
+            tools['ennemie']=False
         elif keys[pygame.K_1]:
             tools['size']=False
             tools['move']=True
             tools['place']=False
             tools['cp']=False
             tools['spawn']=False
+            tools['ennemie']=False
         elif keys[pygame.K_3]:
             tools['size']=False
             tools['move']=False
             tools['place']=True
             tools['cp']=False
             tools['spawn']=False
+            tools['ennemie']=False
         elif keys[pygame.K_4]:
             tools['size']=False
             tools['move']=False
             tools['place']=False
             tools['cp']=True
             tools['spawn']=False
+            tools['ennemie']=False
         elif keys[pygame.K_5]:
             tools['size']=False
             tools['move']=False
             tools['place']=False
             tools['cp']=False
             tools['spawn']=True
+            tools['ennemie']=False
+        elif keys[pygame.K_6]:
+            tools['size']=False
+            tools['move']=False
+            tools['place']=False
+            tools['cp']=False
+            tools['spawn']=False
+            tools['ennemie']=True
         if keys[pygame.K_TAB] and tab_cooldown:
             for i in range(len(entities)-1):
                 entities[i],entities[i+1]=entities[i+1],entities[i]
@@ -564,6 +608,7 @@ def main(scren):
             tools['place']=False
             tools['cp']=False
             tools['spawn']=False
+            tools['ennemie']=False
             if entities!=[]:
                 answer=ask()
                 if answer==0:
@@ -603,6 +648,11 @@ def main(scren):
         if tools['spawn'] and mousepress[0]:
             spawn_x=mousepos[0]-48-screendelta_x
             spawn_y=mousepos[1]-64-screendelta_y
+        if tools['ennemie'] and mousepress[0]:
+            ennemy(mousepos[0]-64,mousepos[1]-64)
+            spawning=True
+        elif spawning and not mousepress[0]:
+            spawning=False
         only=False
         for i in entities:
             if not only:
