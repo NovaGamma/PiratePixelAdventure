@@ -477,9 +477,6 @@ prjs=[]
 enemies=[]
 entities=[]
 pirate=player(300,screeny//2,128,96,5,3,'axe')
-'''
-for a in range(0,500,50):
-    ennemy(350+2*a,screeny//2-50-3*a,128,96,1,2)'''
 
 plank_texture=pygame.image.load('Graphism/plank1.png').convert_alpha()
 #creating all the buttons
@@ -591,7 +588,7 @@ while not end:
     frame_per_frame=False
     pause=False
     while play:
-        frame.tick(30)
+        frame.tick(60)
         print(frame)
         if frame_per_frame:
             frame.tick(1)
@@ -628,18 +625,18 @@ while not end:
                 pirate.stand=False
                 pirate.left=False
                 pirate.right=True
-                pirate.spdx=20
+                pirate.spdx=15
             elif keys[pygame.K_a] or keys[ControlOpt['left']]:
                 pirate.stand=False
                 pirate.right=False
                 pirate.left=True
-                pirate.spdx=-20
+                pirate.spdx=-15
             else:
                 pirate.stand=True
 
             for i in entities:
                 if not i.isground:
-                    i.spdy+=i.mass*g//3
+                    i.spdy+=i.mass*g//7
                 i.isground=False
 
             for i in planks:

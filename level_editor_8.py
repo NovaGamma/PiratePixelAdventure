@@ -333,6 +333,11 @@ def get_name():
         if mousepress[0]:
             if answer.collide(mousepos[0],mousepos[1]):
                 if textinput.get_text()!='':
+                    while mousepress[0]:
+                        mousepress=pygame.mouse.get_pressed()
+                        for event in pygame.event.get():
+                            if event.type==pygame.QUIT:
+                                return True
                     return textinput.get_text()
                     getting=False
         textinput.update(events)
@@ -622,6 +627,7 @@ def main(scren):
             cps=[]
             planks=[]
             entities=[]
+            ennemies=[]
             screendelta_x=screendelta_y=0
             end=load(plank1)
             load_cooldown=False
