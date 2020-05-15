@@ -181,12 +181,12 @@ class platform(object):#defining the class to create platforms
         entities.insert(0,self)#adding the platform to the list of all entities at the first pos to know that this is the last one that we added
     def draw(self):#defining the draw method of the class
         screen.blit(self.img,(self.x+screendelta_x,self.y+screendelta_y))
-        if not tools['cp'] and not tools['spawn'] and not tools['ennemie'] and (self==entities[0] or not mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].w or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].h)):
+        if not tools['cp'] and not tools['spawn'] and not tools['ennemie'] and (self==entities[0] or not mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].width or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].height)):
             screen.blit(pygame.transform.scale(black,(self.width,4)),(self.x+screendelta_x,self.y+screendelta_y))
             screen.blit(pygame.transform.scale(black,(self.width,4)),(self.x+screendelta_x,self.y+screendelta_y+self.height-4))
             screen.blit(pygame.transform.scale(black,(4,self.height)),(self.x+screendelta_x,self.y+screendelta_y))
             screen.blit(pygame.transform.scale(black,(4,self.height)),(self.x+screendelta_x+self.width-4,self.y+screendelta_y))
-            if tools['size'] and (self.touched or self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0]==self or entities[0].touched==False and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].w or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].h))):
+            if tools['size'] and (self.touched or self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0]==self or entities[0].touched==False and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].width or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].height))):
                 if self.up and self.right:
                     screen.blit(arrow_leftup,(self.x+screendelta_x,self.y+screendelta_y))
                 elif self.up and not self.right:
@@ -259,7 +259,7 @@ class chestpoint(object):
 
     def draw(self):
         screen.blit(self.img,(self.x+screendelta_x,self.y+screendelta_y))
-        if not tools['cp'] and not tools['spawn'] and not tools['ennemie'] and (self==entities[0] or not mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].w or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].h)):
+        if not tools['cp'] and not tools['spawn'] and not tools['ennemie'] and (self==entities[0] or not mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].width or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].height)):
             screen.blit(pygame.transform.scale(black,(128,4)),(self.x+screendelta_x,self.y+screendelta_y))
             screen.blit(pygame.transform.scale(black,(128,4)),(self.x+screendelta_x,self.y+screendelta_y+128-4))
             screen.blit(pygame.transform.scale(black,(4,128)),(self.x+screendelta_x,self.y+screendelta_y))
@@ -277,19 +277,20 @@ class chestpoint(object):
             self.touched=False
 
 class ennemy(object):
-    def __init__(self,x,y):
+    def __init__(self,x,y,type='Captain'):
         self.x=x
         self.y=y
-        self.width=
-        self.height
+        self.width=64
+        self.height=64
         self.touched=False
         self.img=ennemy_texture
+        self.type=type
         entities.insert(0,self)
         ennemies.append(self)
 
     def draw(self):
         screen.blit(self.img,(self.x+screendelta_x,self.y+screendelta_y))
-        if not tools['cp'] and not tools['spawn'] and not tools['ennemie'] and (self==entities[0] or not mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].w or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].h)):
+        if not tools['cp'] and not tools['spawn'] and not tools['ennemie'] and (self==entities[0] or not mousepress[0] and self.x+screendelta_x<=mousepos[0]<=self.x+screendelta_x+self.width and self.y+screendelta_y<=mousepos[1]<=self.y+screendelta_y+self.height and (entities[0].x>mousepos[0] or mousepos[0]>entities[0].x+entities[0].width or entities[0].y>mousepos[1] or mousepos[1]>entities[0].y+entities[0].height)):
             screen.blit(pygame.transform.scale(black,(128,4)),(self.x+screendelta_x,self.y+screendelta_y))
             screen.blit(pygame.transform.scale(black,(128,4)),(self.x+screendelta_x,self.y+screendelta_y+128-4))
             screen.blit(pygame.transform.scale(black,(4,128)),(self.x+screendelta_x,self.y+screendelta_y))
@@ -361,6 +362,8 @@ def save():
             level.write('plank '+str(plank.x/screenx)+' '+str(plank.y/screeny)+' '+str(plank.height/screeny)+' '+str(plank.width/screenx)+'\n')
         for cp in cps:
             level.write('cp '+str(cp.x/screenx)+' '+str(cp.y/screeny)+'\n')
+        for ennemy in ennemies:
+            level.write('ennemy '+str(ennemy.x/screenx)+' '+str(ennemy.y/screeny)+' '+ennemy.type+'\n')
         level.write('spawn '+str(spawn_x/screenx)+' '+str(spawn_y/screeny))
     #re-blitting the entities and the bg but without the tools to have a clean preview
     screen.blit(bg,(0,0))
@@ -437,12 +440,14 @@ def load(plank1):
                 elif parameters[0]=='spawn':
                     spawn_x=int(float(parameters[1])*screenx)
                     spawn_y=int(float(parameters[2])*screeny)
+                elif parameters[0]=='ennemy':
+                    ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),128,96,1,2,parameters[3])
 
 def blit_tools():
-    for i in range(5):
-        if i==1 and not tools['size'] or i==0 and not tools['move'] or i==2 and not tools['place'] or i==3 and not tools['cp'] or i==4 and not tools['spawn']:
+    for i in range(len(tools)):
+        if i==1 and not tools['size'] or i==0 and not tools['move'] or i==2 and not tools['place'] or i==3 and not tools['cp'] or i==4 and not tools['spawn'] or i==5 and not tools['ennemie']:
             screen.blit(tool[i*2],(4+i*(64+4),screeny-64-4))
-        elif i==1 and tools['size'] or i==0 and tools['move'] or i==2 and tools['place'] or i==3 and tools['cp'] or i==4 and tools['spawn']:
+        elif i==1 and tools['size'] or i==0 and tools['move'] or i==2 and tools['place'] or i==3 and tools['cp'] or i==4 and tools['spawn'] or i==5 and tools['ennemie']:
             screen.blit(tool[i*2+1],(4+i*(64+4),screeny-64-4))
 
 def ask():
@@ -587,9 +592,9 @@ def main(scren):
         if keys[pygame.K_c] and (keys[pygame.K_RCTRL] or keys[pygame.K_LCTRL]) and copy_cooldown:
             if len(entities)>0:
                 if entities[0] in planks:
-                    clipboard=[entities[0].x,entities[0].y,entities[0].h,entities[0].w,entities[0].img,'p']
+                    clipboard=[entities[0].x,entities[0].y,entities[0].height,entities[0].width,entities[0].img,'p']
                 elif entities[0] in cps:
-                    clipboard=[entities[0].x,entities[0].y,entities[0].h,entities[0].w,entities[0].img,'c']
+                    clipboard=[entities[0].x,entities[0].y,entities[0].height,entities[0].width,entities[0].img,'c']
                 copy_cooldown=False
         elif not keys[pygame.K_c]:
             copy_cooldown=True
@@ -648,8 +653,8 @@ def main(scren):
         if tools['spawn'] and mousepress[0]:
             spawn_x=mousepos[0]-48-screendelta_x
             spawn_y=mousepos[1]-64-screendelta_y
-        if tools['ennemie'] and mousepress[0]:
-            ennemy(mousepos[0]-64,mousepos[1]-64)
+        if tools['ennemie'] and mousepress[0] and not spawning:
+            ennemy(mousepos[0]-64,mousepos[1]-64,"Captain")
             spawning=True
         elif spawning and not mousepress[0]:
             spawning=False
@@ -669,6 +674,8 @@ def main(scren):
             screen.blit(chest_texture2,(mousepos[0]-64,mousepos[1]-64))
         if tools['spawn']:
             screen.blit(spawn2,(mousepos[0]-48,mousepos[1]-64))
+        if tools['ennemie']:
+            screen.blit(ennemy_texture2,(mousepos[0]-64,mousepos[1]-64))
         if not (keys[pygame.K_RSHIFT] or keys[pygame.K_LSHIFT]):
             screen_moving=False
             if ((len(entities)>0 and entities[0].touched==True) and (tools['move'] or tools['size']) or tools['spawn']) or tools['cp']:
@@ -677,7 +684,7 @@ def main(scren):
                         entities[0].x-=20
                     if tools['size']:
                         entities[0].x-=20
-                        entities[0].w+=20
+                        entities[0].width+=20
                     screendelta_x+=20
                     screen_moving=True
                 if mousepos[0]>1350 or keys[pygame.K_d] or keys[pygame.K_RIGHT]:
@@ -686,7 +693,7 @@ def main(scren):
                     if tools['move']:
                         entities[0].x+=20
                     if tools['size']:
-                        entities[0].w+=20
+                        entities[0].width+=20
                 if mousepos[1]<50 or (keys[pygame.K_w] and not keys[pygame.K_RCTRL] and not keys[pygame.K_LCTRL]) or keys[pygame.K_UP]:
                     screendelta_y+=20
                     screen_moving=True
@@ -694,14 +701,14 @@ def main(scren):
                         entities[0].y-=20
                     if tools['size']:
                         entities[0].y-=20
-                        entities[0].h+=20
+                        entities[0].height+=20
                 if mousepos[1]>650 or (keys[pygame.K_s] and not keys[pygame.K_RCTRL] and not keys[pygame.K_LCTRL]) or keys[pygame.K_DOWN]:
                     screendelta_y-=20
                     screen_moving=True
                     if tools['move']:
                         entities[0].y+=20
                     if tools['size']:
-                        entities[0].h+=20
+                        entities[0].height+=20
             if not screen_moving:
                 if (keys[pygame.K_w] and not keys[pygame.K_RCTRL] and not keys[pygame.K_LCTRL]) or keys[pygame.K_UP]:
                     screendelta_y+=20
