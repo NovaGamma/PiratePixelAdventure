@@ -249,6 +249,12 @@ def display_levels(plank1):
         for button in lvl_button:
             button.draw(screen)
         pygame.display.update()
+        mousepress=pygame.mouse.get_pressed()
+        while mousepress[0]:
+            mousepress=pygame.mouse.get_pressed()
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    return True
         while not(choosed):
             mousepress=pygame.mouse.get_pressed()
             mousepos=pygame.mouse.get_pos()
@@ -585,7 +591,7 @@ while not end:
     frame_per_frame=False
     pause=False
     while play:
-        frame.tick(60)
+        frame.tick(30)
         print(frame)
         if frame_per_frame:
             frame.tick(1)

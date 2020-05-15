@@ -278,8 +278,8 @@ class chestpoint(object):
 
 class ennemy(object):
     def __init__(self,x,y,type='Captain'):
-        self.x=x
-        self.y=y
+        self.x=x-screendelta_x
+        self.y=y-screendelta_y
         self.width=64
         self.height=64
         self.touched=False
@@ -441,7 +441,7 @@ def load(plank1):
                     spawn_x=int(float(parameters[1])*screenx)
                     spawn_y=int(float(parameters[2])*screeny)
                 elif parameters[0]=='ennemy':
-                    ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),128,96,1,2,parameters[3])
+                    ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),parameters[3])
 
 def blit_tools():
     for i in range(len(tools)):
