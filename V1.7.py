@@ -170,9 +170,9 @@ class cp(object):#the class defining the checkpoints in the game
         cps.append(self)#adding the cp at the list of the cps
 
     def draw(self):
-        if self.x-pirate.width+20<=pirate.x<=self.x+self.width and self.y-self.height<=pirate.y<=self.y+pirate.height and not self.cpt:
+        if self.x-player.width+20<=player.x<=self.x+self.width and self.y-self.height<=player.y<=self.y+player.height and not self.cpt:
             self.cpt=True
-            pirate.spawnpoint=[self.x,self.y]#changing the spawn position of the player
+            player.spawnpoint=[self.x,self.y]#changing the spawn position of the player
             chestsound.play()#playing all the sounds
             chestsound2.play()
             chestsound2.play()
@@ -288,10 +288,10 @@ def display_levels(plank1):
         load(levels_name[pos],plank1)
 
 def reset_player():
-    pirate.life=3
-    pirate.spdy=0
-    pirate.spdx=0
-    pirate.isground=1
+    player.life=3
+    player.spdy=0
+    player.spdx=0
+    player.isground=1
 
 def SaveOption():
     if not os.path.exists('Config'):
@@ -350,7 +350,7 @@ def load_save(save_name):
                 if temp[0]=='level':
                     next_level=temp[1].rstrip("\n")
                 elif temp[0]=='money':
-                    pirate.money=int(temp[1])
+                    player.money=int(temp[1])
                 else:
                     if temp[0]!='level_editor':
                         raise Exception(line+" didn't load successully")
@@ -370,9 +370,9 @@ def load(level,plank1):
                 elif parameters[0]=='cp':
                     cp(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny))
                 elif parameters[0]=='spawn':
-                    pirate.spawnpoint=[int(float(parameters[1])*screenx),int(float(parameters[2])*screeny)]
-                    pirate.x=pirate.spawnpoint[0]
-                    pirate.y=pirate.spawnpoint[1]
+                    player.spawnpoint=[int(float(parameters[1])*screenx),int(float(parameters[2])*screeny)]
+                    player.x=player.spawnpoint[0]
+                    player.y=player.spawnpoint[1]
                 elif parameters[0]=='ennemy':
                     ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),128,96,1,2,parameters[3])
     else:
@@ -476,7 +476,7 @@ cps=[]
 prjs=[]
 enemies=[]
 entities=[]
-pirate=player(300,screeny//2,128,96,5,3,'axe')
+player=player(300,screeny//2,128,96,5,3,'axe')
 
 plank_texture=pygame.image.load('Graphism/plank1.png').convert_alpha()
 #creating all the buttons
@@ -500,15 +500,15 @@ else:
     button_level_editor=image_button(256,128,0,0,pygame.transform.scale(pygame.image.load("Graphism/lock.png").convert_alpha(),(64,64)),96,32,1)
     button_load_levels=text_button()#creating an empty button for the button menu to load it even if we don't wont to display it
 button_language=text_button(256,128,screenx//2-512,screeny//2+128,Language['language_button'],20,128//3+20,(255,233,0))
-french_button=language_button(256,128,screenx//2-512,screeny//2+128,'French',pygame.image.load('Graphism/drapeaux_fr2.PNG').convert_alpha())
-english_button=language_button(256,128,screenx//2-512,screeny//2-128,'English',pygame.image.load('Graphism/drapeaux_en2.PNG').convert_alpha())
+french_button=language_button(256,128,screenx//2-512,screeny//2-128,'French',pygame.image.load('Graphism/drapeaux_fr2.PNG').convert_alpha())
+english_button=language_button(256,128,screenx-512,screeny//2-128,'English',pygame.image.load('Graphism/drapeaux_en2.PNG').convert_alpha())
 button_languages=[french_button,english_button]
 button_menu=[button_language,button_control,button_level_editor,button_load_levels,button_continue]
 
 #load saves
-button_save_1=text_button(screenx/3-3*10, screeny-20, 10, 10, 'File1',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
-button_save_2=text_button(screenx/3-3*10, screeny-20, 10+screenx/3-2*10, 10, 'File2',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
-button_save_3=text_button(screenx/3-3*10, screeny-20, 10+2*(screenx/3-10), 10, 'File3',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
+button_save_1=text_button(screenx/3-10, screeny-20, 10, 10, 'File1',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
+button_save_2=text_button(screenx/3-10, screeny-20, 10+screenx/3, 10, 'File2',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
+button_save_3=text_button(screenx/3-10, screeny-20, 10+2*(screenx/3), 10, 'File3',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
 button_save=[button_save_1,button_save_2,button_save_3]
 
 while not end:
@@ -563,8 +563,8 @@ while not end:
                         planks=[]
                         cps=[]
                         prjs=[]
-                        '''enemies=[]
-                        entities=[pirate]'''
+                        enemies=[]
+                        entities=[player]
                         load(next_level,plank_texture)
                         reset_player()
                         pygame.mixer.stop()
@@ -572,7 +572,7 @@ while not end:
                         soundtrack.play()
                         play=True
                         choose_save=False
-                        print(str(pirate.x)+'   '+str(pirate.y))
+                        print(str(player.x)+'   '+str(player.y))
                     else:
                         print('Wow such empty')
         for event in pygame.event.get():
@@ -614,7 +614,7 @@ while not end:
         else:
             screen.blit(bg,(0,0))
             keys=pygame.key.get_pressed()
-            pirate.spdx=0
+            player.spdx=0
             if keys[pygame.K_p] and not(keys[pygame.K_LSHIFT]) and not(frame_per_frame):
                 frame_per_frame=True
             elif keys[pygame.K_LSHIFT] and keys[pygame.K_p] and frame_per_frame:
@@ -622,17 +622,17 @@ while not end:
             elif keys[pygame.K_o] and not(keys[pygame.K_LSHIFT]) and not(pause):
                 pause=True
             elif keys[pygame.K_d] or keys[ControlOpt['right']]:
-                pirate.stand=False
-                pirate.left=False
-                pirate.right=True
-                pirate.spdx=15
+                player.stand=False
+                player.left=False
+                player.right=True
+                player.spdx=15
             elif keys[pygame.K_a] or keys[ControlOpt['left']]:
-                pirate.stand=False
-                pirate.right=False
-                pirate.left=True
-                pirate.spdx=-15
+                player.stand=False
+                player.right=False
+                player.left=True
+                player.spdx=-15
             else:
-                pirate.stand=True
+                player.stand=True
 
             for i in entities:
                 if not i.isground:
@@ -643,47 +643,41 @@ while not end:
                 i.check()
                 i.draw()
 
-            if (keys[pygame.K_w] or keys[ControlOpt['up']]) and pirate.isground and not pirate.spdy:
+            if (keys[pygame.K_w] or keys[ControlOpt['up']]) and player.isground and not player.spdy:
                 jumpsound.play()
-                pirate.spdy=pirate.jump
+                player.spdy=player.jump
 
-            if pirate.y>screeny and pirate.life>1:
-                if pirate.spawnpoint[0]!=300:
+            if player.y>screeny:
+                if player.spawnpoint[0]!=300:
                     for i in planks:
-                        i.x+=300-pirate.spawnpoint[0]
+                        i.x+=300-player.spawnpoint[0]
                     for i in cps:
-                        i.x+=300-pirate.spawnpoint[0]
+                        i.x+=300-player.spawnpoint[0]
                     for i in prjs:
-                        i.x+=300-pirate.spawnpoint[0]
+                        i.x+=300-player.spawnpoint[0]
                     for i in enemies:
-                        i.x+=300-pirate.spawnpoint[0]
-                    pirate.spawnpoint[0]=300
-                if pirate.spawnpoint[1]!=350:
+                        i.x+=300-player.spawnpoint[0]
+                    player.spawnpoint[0]=300
+                if player.spawnpoint[1]!=350:
                     for i in planks:
-                        i.y+=350-pirate.spawnpoint[1]
+                        i.y+=350-player.spawnpoint[1]
                     for i in cps:
-                        i.y+=350-pirate.spawnpoint[1]
+                        i.y+=350-player.spawnpoint[1]
                     for i in prjs:
-                        i.y+=350-pirate.spawnpoint[1]
+                        i.y+=350-player.spawnpoint[1]
                     for i in enemies:
-                        i.y+=350-pirate.spawnpoint[1]
-                    pirate.spawnpoint[1]=350
-                pirate.spdy=0
-                pirate.x=pirate.spawnpoint[0]
-                pirate.y=pirate.spawnpoint[1]
-                pirate.life-=1
-                pirate.isground=True
+                        i.y+=350-player.spawnpoint[1]
+                    player.spawnpoint[1]=350
+                player.spdy=0
+                player.x=player.spawnpoint[0]
+                player.y=player.spawnpoint[1]-10
+                player.life-=1
+                player.isground=True
                 deathsound.play()
-            elif pirate.y>screeny:
-                play=False
-                start=False
-                pygame.mixer.stop()
-                deathsound.play()
-                game_over.play()
             if keys[ControlOpt['shoot']]:
-                pirate.attack()
-            if pirate.hit==1:
-                pirate.hit=2
+                player.attack()
+            if player.hit==1:
+                player.hit=2
             for i in enemies:
                 if i.y>screeny:
                     i.life=0
@@ -697,7 +691,7 @@ while not end:
                             i.hit=1
                             i.life-=1
                             if i.life==0:
-                                pirate.money+=1
+                                player.money+=1
                                 enemies.remove(i)
                                 entities.remove(i)
                         elif i.hit==2:
@@ -710,9 +704,9 @@ while not end:
                             i.turn=True
                         if i.turn and j.x+i.width>=i.x+i.width:
                             i.turn=False
-                        elif i.x-300<pirate.x<i.x and pirate.y-15<i.y<pirate.y+15:
+                        elif i.x-300<player.x<i.x and player.y-15<i.y<player.y+15:
                             i.turn=True
-                        elif i.x+300>pirate.x>i.x and pirate.y-15<i.y<pirate.y+15:
+                        elif i.x+300>player.x>i.x and player.y-15<i.y<player.y+15:
                             i.turn=False
                 if i.isground and not i.turn:
                     i.x+=10
@@ -725,19 +719,19 @@ while not end:
                     i.right=False
                     i.left=True
                 '''
-                if collide(i,pirate):
-                    if pirate.hit==0:
-                        pirate.life-=1
-                        pirate.hit=1
+                if collide(i,player):
+                    if player.hit==0:
+                        player.life-=1
+                        player.hit=1
                         if i.direction=='left':
-                            pirate.spdx-=10
+                            player.spdx-=10
                         elif i.direction=='right':
-                            pirate.spdx+=10
-                        pirate.spdy+=10
-                    elif pirate.hit==2:
-                        pirate.hit=1
-            if pirate.hit==2:
-                pirate.hit=0'''
+                            player.spdx+=10
+                        player.spdy+=10
+                    elif player.hit==2:
+                        player.hit=1
+            if player.hit==2:
+                player.hit=0'''
             for i in entities:
                 i.move()
             for i in prjs:
@@ -750,11 +744,20 @@ while not end:
                 i.draw(hitbox=True)
             for i in enemies:
                 i.health_bar()
-            pirate.health_draw()
+            player.health_draw()
             screen.blit(parawheel,(screenx-64,0))
-            if pirate.life==0:
+            if player.life==0:
+                pygame.mixer.stop()
+                deathsound.play()
+                game_over.play()
+                reset_player()
                 play=False
                 start=False
+                planks=[]
+                cps=[]
+                prjs=[]
+                enemies=[]
+                entities=[player]
 
         pygame.display.update()
 
@@ -805,9 +808,10 @@ while not end:
         pygame.display.update()
 
     while language_setting:
+        screen.fill([100,20, 20])
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
-                settings=False
+                language_setting=False
                 end=True
                 print("quit")
         keys=pygame.key.get_pressed()
@@ -817,14 +821,28 @@ while not end:
             start=False
         for button in button_languages:
             button.draw(screen)
-        if pygame.mouse.get_pressed()[0]:
+        mousepress=pygame.mouse.get_pressed()
+        if mousepress[0]:
+            while mousepress[0]:
+                mousepress=pygame.mouse.get_pressed()
+                for event in pygame.event.get():
+                    if event.type==pygame.QUIT:
+                        mousepress[0]==0
+                        language_setting=False
+                        end=True
             posX=pygame.mouse.get_pos()[0]
             posY=pygame.mouse.get_pos()[1]
             for Button in button_languages:
                 if Button.collide(posX,posY):
                     print(Button.name)
                     Language["language"]=Button.name
+                    with open("Language/"+Button.name+'.txt' ,'r') as text:
+                        for line in text:
+                            temp=line.split(' ')
+                            Language[temp[0]]=temp[1].rstrip('\n')
                     SaveOption()
+                    language_setting=False
+                    start=False
         pygame.display.update()
 
     if level_editor:
