@@ -369,11 +369,14 @@ def save():
             level.write('cp '+str(cp.x/screenx)+' '+str(cp.y/screeny)+'\n')
         for ennemy in ennemies:
             level.write('ennemy '+str(ennemy.x/screenx)+' '+str(ennemy.y/screeny)+' '+ennemy.type+'\n')
-        level.write('spawn '+str(spawn_x/screenx)+' '+str(spawn_y/screeny))
+        level.write('spawn '+str(spawn_x/screenx)+' '+str(spawn_y/screeny)+'\n')
+        level.write('finish '+str(finish_x/screenx)+' '+str(finish_y/screeny))
     #re-blitting the entities and the bg but without the tools to have a clean preview
     screen.blit(bg,(0,0))
     for i in range(len(entities)):
         entities[-i-1].draw()
+    screen.blit(spawn,(spawn_x+screendelta_x,spawn_y+screendelta_y))
+    screen.blit(finish,(finish_x+screendelta_x,finish_y+screendelta_y))
     pygame.display.flip()#updating the screen
     pygame.image.save(screen,'Levels/'+name+'/level_preview.PNG')#saving the preview
     print("Level saved !")
@@ -436,7 +439,7 @@ def load(plank1):
             pos=levels_name.index(levels)
     if pos!=-1:
         with open("Levels/"+levels_name[pos]+'/'+'entities.txt','r') as level:
-            for line in  level:
+            for line in level:
                 parameters=line.split(' ')
                 if parameters[0]=='cp':
                     chestpoint(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny))
@@ -447,12 +450,15 @@ def load(plank1):
                     spawn_y=int(float(parameters[2])*screeny)
                 elif parameters[0]=='ennemy':
                     ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),parameters[3])
+                elif parameters[0]=='finish':
+                    finish_x=int(float(parameters[1])*screenx)
+                    finish_y=int(float(parameters[2])*screeny)
 
 def blit_tools():
     for i in range(len(tools)):
-        if i==1 and not tools['size'] or i==0 and not tools['move'] or i==2 and not tools['place'] or i==3 and not tools['cp'] or i==4 and not tools['spawn'] or i==5 and not tools['ennemie']:
+        if not tools[toolList[i]]:
             screen.blit(tool[i*2],(4+i*(64+4),screeny-64-4))
-        elif i==1 and tools['size'] or i==0 and tools['move'] or i==2 and tools['place'] or i==3 and tools['cp'] or i==4 and tools['spawn'] or i==5 and tools['ennemie']:
+        else:
             screen.blit(tool[i*2+1],(4+i*(64+4),screeny-64-4))
 
 def ask():
@@ -491,14 +497,14 @@ def ask():
 def main(scren):
     global screen
     screen=scren
-    global end,tools,creating,spawning,spawn_x,spawn_y,screendelta_x,screendelta_y,mousepress,mousedelta,mousepos,entities,ennemies,planks,cps,undo,redo,clipboard
-    del_cooldown=True
+    global end,tools,ennemy_type,toolEnemies,tool,toolList,creating,spawning,finishing,spawn_x,spawn_y,finish_x,finish_y,screendelta_x,screendelta_y,mousepress,mousedelta,mousepos,entities,ennemies,planks,cps,undo,redo,clipboard
     undo_cooldown=True
     redo_cooldown=True
     copy_cooldown=True
     paste_cooldown=True
     save_cooldown=True
     load_cooldown=True
+    finish_cooldown=True
     print("\n\n\n\n\n\n\n\n\n\n\n\nControls :\n\nzqsd or arrows to move the camera\n1, 2, 3 or 4 to select a tool\ntab to select another platform\nsuppr to delete the selected platform\nctr+z to respawn a deleted platform\nctrl+y to delete a respawned platform\nctrl+c to copy a platform, its size and position\nctrl+v to paste the copied platform\nctrl+o to open an existing level\nctrl+s to save your level\nctrl+r to reset the screen position\nshift to lock the camera")
     while not end:
         keys=pygame.key.get_pressed()
@@ -510,48 +516,44 @@ def main(scren):
                 return None
         if keys[pygame.K_ESCAPE]:
             return screen
-        if keys[pygame.K_2]:
-            tools['size']=True
-            tools['move']=False
-            tools['place']=False
-            tools['cp']=False
-            tools['spawn']=False
-            tools['ennemie']=False
-        elif keys[pygame.K_1]:
-            tools['size']=False
+        if keys[pygame.K_1]:
+            for key in tools.keys():
+                tools[key]=False
             tools['move']=True
-            tools['place']=False
-            tools['cp']=False
-            tools['spawn']=False
-            tools['ennemie']=False
+        elif keys[pygame.K_2]:
+            for key in tools.keys():
+                tools[key]=False
+            tools['size']=True
         elif keys[pygame.K_3]:
-            tools['size']=False
-            tools['move']=False
+            for key in tools.keys():
+                tools[key]=False
             tools['place']=True
-            tools['cp']=False
-            tools['spawn']=False
-            tools['ennemie']=False
         elif keys[pygame.K_4]:
-            tools['size']=False
-            tools['move']=False
-            tools['place']=False
+            for key in tools.keys():
+                tools[key]=False
             tools['cp']=True
-            tools['spawn']=False
-            tools['ennemie']=False
         elif keys[pygame.K_5]:
-            tools['size']=False
-            tools['move']=False
-            tools['place']=False
-            tools['cp']=False
+            for key in tools.keys():
+                tools[key]=False
             tools['spawn']=True
-            tools['ennemie']=False
-        elif keys[pygame.K_6]:
-            tools['size']=False
-            tools['move']=False
-            tools['place']=False
-            tools['cp']=False
-            tools['spawn']=False
+        elif keys[pygame.K_6] and not ennemy_type[2]:
+            ennemy_type[2]=True
+            if tools['ennemie']:
+                if ennemy_type[0]<4:
+                    ennemy_type[0]+=1
+                else:
+                    ennemy_type[0]=0
+                tool[10]=toolEnemies[2*ennemy_type[0]]
+                tool[11]=toolEnemies[2*ennemy_type[0]+1]
+            for key in tools.keys():
+                tools[key]=False
             tools['ennemie']=True
+        elif not keys[pygame.K_6]:
+            ennemy_type[2]=False
+        elif keys[pygame.K_7]:
+            for key in tools.keys():
+                tools[key]=False
+            tools['finish']=True
         if keys[pygame.K_TAB] and tab_cooldown:
             for i in range(len(entities)-1):
                 entities[i],entities[i+1]=entities[i+1],entities[i]
@@ -613,12 +615,9 @@ def main(scren):
         elif not keys[pygame.K_v]:
             paste_cooldown=True
         if keys[pygame.K_o] and (keys[pygame.K_RCTRL] or keys[pygame.K_LCTRL]) and load_cooldown:
-            tools['size']=False
+            for key in tools.keys():
+                tools[key]=False
             tools['move']=True
-            tools['place']=False
-            tools['cp']=False
-            tools['spawn']=False
-            tools['ennemie']=False
             if entities!=[]:
                 answer=ask()
                 if answer==0:
@@ -664,6 +663,11 @@ def main(scren):
             spawning=True
         elif spawning and not mousepress[0]:
             spawning=False
+        if tools['finish'] and mousepress[0] and not finishing:
+            finish_x=mousepos[0]-64-screendelta_x
+            finish_y=mousepos[1]-64-screendelta_x
+        elif finishing and not mousepress[0]:
+            finishing=False
         only=False
         for i in entities:
             if not only:
@@ -676,12 +680,15 @@ def main(scren):
         for i in range(len(entities)):
             entities[-i-1].draw()
         screen.blit(spawn,(spawn_x+screendelta_x,spawn_y+screendelta_y))
+        screen.blit(finish,(finish_x+screendelta_x,finish_y+screendelta_y))
         if tools['cp']:
             screen.blit(chest_texture2,(mousepos[0]-64,mousepos[1]-64))
         if tools['spawn']:
             screen.blit(spawn2,(mousepos[0]-48,mousepos[1]-64))
         if tools['ennemie']:
             screen.blit(ennemy_texture2,(mousepos[0]-64,mousepos[1]-64))
+        if tools['finish']:
+            screen.blit(finish2,(mousepos[0]-64,mousepos[1]-64))
         if not (keys[pygame.K_RSHIFT] or keys[pygame.K_LSHIFT]):
             screen_moving=False
             if ((len(entities)>0 and entities[0].touched==True) and (tools['move'] or tools['size']) or tools['spawn']) or tools['cp']:
