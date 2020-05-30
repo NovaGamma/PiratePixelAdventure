@@ -49,6 +49,7 @@ class people(object):#the class used to define the entities such as ennemies or 
         self.prj=prj
         self.cooldown=0#the cooldown for the projectile
         self.hit=0#a parameter that will retain if the entity is being hitted stopping the fact that it would be hitted by the same projectile each frame
+        self.type=0
 
     def draw(self,hitbox=False):#the function that display the entity, and if precised the hitbox
         if not self.isground:
@@ -68,9 +69,9 @@ class people(object):#the class used to define the entities such as ennemies or 
             else:
                 self.walkcount+=1
             if self.left:
-                self.info=walkleft[self.walkcount//4%8]
+                self.info=walkleft[self.type][self.walkcount//4%8]
             else:
-                self.info=walkright[self.walkcount//4%8]
+                self.info=walkright[self.type][self.walkcount//4%8]
         screen.blit(pygame.transform.scale(self.info,(self.width,self.height)),(self.x,self.y))
         if hitbox:#here we display the hitbox as the border of a rectangle
             self.hitbox=(self.x,self.y,self.width,self.height)
@@ -442,11 +443,29 @@ jumpright=[pygame.image.load('Graphism/jumpright0.png').convert_alpha(),pygame.i
 jumpleft=[pygame.image.load('Graphism/jumpleft0.png').convert_alpha(),pygame.image.load('Graphism/jumpleft1.png').convert_alpha(),pygame.image.load('Graphism/jumpleft2.png').convert_alpha()]
 walkright=[]
 walkleft=[]
+temp=os.listdir('Graphism/Ennemies')
+for i in range(len(temp)):
+    images=os.listdir('Graphism/Ennemies/'+temp[i])
+    buffer=[]
+    for j in range(4):
+        print(images[j])
+        buffer.append(pygame.image.load('Graphism/Ennemies/'+temp[i]+'/'+images[j]).convert_alpha())
+    walkleft.append(buffer)
+    print("buffer")
+    buffer=[]
+    for j in range(4,8):
+        print(images[j])
+        buffer.append(pygame.image.load('Graphism/Ennemies/'+temp[i]+'/'+images[j]).convert_alpha())
+    walkright.append(buffer)
+
 for i in range(8):
     temp='rright'+str(i)+'.png'
     temp2='lleft'+str(i)+'.png'
     walkright.append(pygame.image.load('Graphism/'+temp).convert_alpha())
     walkleft.append(pygame.image.load('Graphism/'+temp2).convert_alpha())
+
+
+
 chestpoint=[pygame.image.load('Graphism/chestpoint (1).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (2).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (3).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (4).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (5).png').convert_alpha()]
 f_heart=pygame.transform.scale(pygame.image.load('Graphism/Full_heart1.png').convert_alpha(),(64,64))
 e_heart=pygame.transform.scale(pygame.image.load('Graphism/Empty_heart.png').convert_alpha(),(64,64))

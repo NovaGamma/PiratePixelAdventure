@@ -283,7 +283,7 @@ class ennemy(object):
         self.width=64
         self.height=64
         self.touched=False
-        self.img=ennemy_texture
+        self.img=ennemy_texture[type]
         self.type=type
         entities.insert(0,self)
         ennemies.append(self)
@@ -368,7 +368,7 @@ def save():
         for cp in cps:
             level.write('cp '+str(cp.x/screenx)+' '+str(cp.y/screeny)+'\n')
         for ennemy in ennemies:
-            level.write('ennemy '+str(ennemy.x/screenx)+' '+str(ennemy.y/screeny)+' '+ennemy.type+'\n')
+            level.write('ennemy '+str(ennemy.x/screenx)+' '+str(ennemy.y/screeny)+' '+str(ennemy.type)+'\n')
         level.write('spawn '+str(spawn_x/screenx)+' '+str(spawn_y/screeny)+'\n')
         level.write('finish '+str(finish_x/screenx)+' '+str(finish_y/screeny))
     #re-blitting the entities and the bg but without the tools to have a clean preview
@@ -449,7 +449,7 @@ def load(plank1):
                     spawn_x=int(float(parameters[1])*screenx)
                     spawn_y=int(float(parameters[2])*screeny)
                 elif parameters[0]=='ennemy':
-                    ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),parameters[3])
+                    ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),int(parameters[3]))
                 elif parameters[0]=='finish':
                     finish_x=int(float(parameters[1])*screenx)
                     finish_y=int(float(parameters[2])*screeny)
@@ -659,7 +659,7 @@ def main(scren):
             spawn_x=mousepos[0]-48-screendelta_x
             spawn_y=mousepos[1]-64-screendelta_y
         if tools['ennemie'] and mousepress[0] and not spawning:
-            ennemy(mousepos[0]-64,mousepos[1]-64,"Captain")
+            ennemy(mousepos[0]-64,mousepos[1]-64,ennemy_type[0])
             spawning=True
         elif spawning and not mousepress[0]:
             spawning=False

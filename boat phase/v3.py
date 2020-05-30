@@ -88,9 +88,9 @@ class projectile():
             self.y=cannon1.y+cannon1.h/2-self.h/2
             ratio_x=-cannon1.degree/90
             ratio_y=cannon1.degree/90-1
-        LOL=23/math.sqrt(ratio_x**2+ratio_y**2)
-        self.spd_x_0=LOL*ratio_x
-        self.spd_y=LOL*ratio_y
+        velocity=23/math.sqrt(ratio_x**2+ratio_y**2)
+        self.spd_x_0=velocity*ratio_x
+        self.spd_y=velocity*ratio_y
         self.a_y=g/24
         self.sort=sort
     def check(self):
@@ -103,14 +103,17 @@ class projectile():
             else:
                 ally_projectiles.remove(self)
         elif (not self.sort or self.sort==2) and cannon1.life>0 and self.x+self.w>=cannon1.x>=self.x-2*19 and self.y+self.h>=cannon1.y+8*2>=self.y-20*2:
-            cannon1.life-=1
+            if not self.sort:
+                cannon1.life-=1
+            else:
+                cannon1.life-=2
             cannon1.damaged=5
             if cannon1.life<1:
                 cannon1.cooldown2=300
             ally_projectiles.remove(self)
         elif (not self.sort or self.sort==2) and self.x+self.w>=boat1_x>=self.x-434 and self.y+self.h>=boat1_y>=self.y-280 and boat1_mask.overlap(ball_mask,(int(self.x-boat1_x),int(self.y-boat1_y))):
             for i in body_parts:
-                if i.mask.overlap(ball_mask,(int(self.x-boat1_x),int(self.y-boat1_y))):
+                if self in ally_projectiles and i.mask.overlap(ball_mask,(int(self.x-boat1_x),int(self.y-boat1_y))):
                     ally_projectiles.remove(self)
                     i.damaged=5
                     if not self.sort:
@@ -177,9 +180,14 @@ f_heart=pygame.transform.scale(pygame.image.load('Full_heart1.png').convert_alph
 e_heart=pygame.transform.scale(pygame.image.load('Empty_heart.png').convert_alpha(),(64,64))
 skip=pygame.transform.scale(pygame.image.load('space_skip.png').convert_alpha(),(274*2,18*2))
 box=pygame.transform.scale(pygame.image.load('22x22box.png').convert(),(64,64))
+enemy_coque=[pygame.image.load('434x280enemy_coque0.png').convert_alpha(),pygame.image.load('434x280enemy_coque1.png').convert_alpha(),pygame.image.load('434x280enemy_coque2.png').convert_alpha(),pygame.image.load('434x280enemy_coque3.png').convert_alpha()]
+coque_mask=pygame.mask.from_surface(enemy_coque[3])
+enemy_flag1=[pygame.image.load('434x280enemy_flag10.png').convert_alpha(),pygame.image.load('434x280enemy_flag11.png').convert_alpha(),pygame.image.load('434x280enemy_flag12.png').convert_alpha(),pygame.image.load('434x280enemy_flag13.png').convert_alpha()]
+flag1_mask=pygame.mask.from_surface(enemy_flag1[3])
+coque=boat1_part(50,enemy_coque,coque_mask)
+flag1=boat1_part(15,enemy_flag1,flag1_mask)
 cannon0=canon(cannon_x,cannon_y-40,0)
 cannon1=canon(cannon_x+boat1_x-263,cannon_y-50,1)
-coque=boat1_part(50,icons,boat1_mask)
 cooldown=0
 while play:
     frame.tick(60)
@@ -243,7 +251,6 @@ while play:
         cannon0.damaged-=1
     else:
         screen.blit(boat0,(boat0_x,boat0_y))
-    screen.blit(boat1,(boat1_x,boat1_y))
     for part in body:
         part.draw()
     for proj in ally_projectiles:
@@ -287,8 +294,10 @@ while play:
         if cooldown<100:
             screen.blit(boss_fight,(screenx//2-95*4,screeny//2-100-14*4))
             cooldown+=1
+        pygame.draw.rect(screen,(0,0,0), (screenx//2-274*ratiox,screeny-50*ratioy,274*2*ratiox,18*2*ratioy))
+        pygame.draw.rect(screen,(255,0,0), (screenx//2-272*ratiox,screeny-48*ratioy,272*2*coque.life/coque.full_life*ratiox,16*2*ratioy))
     else:
-        screen.blit(skip,(screenx//2-260*ratiox,screeny-70*ratioy))
+        screen.blit(skip,(screenx//2-274*ratiox,screeny-70*ratioy))
     if not boat0_life:
         play=False
     elif coque not in body_parts:
@@ -299,6 +308,5 @@ while play:
         cannon1.cooldown+=1
         boat0_x+=0.5
         cannon0.x+=0.5
-    pygame.draw.rect(screen,100,(0,0,64,64))
     pygame.display.update()
 pygame.quit()

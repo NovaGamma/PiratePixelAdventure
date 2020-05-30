@@ -12,8 +12,8 @@ bg=pygame.transform.scale(pygame.image.load(path+'bg (1).png'),(screenx,screeny)
 plank1=pygame.image.load(path+'plank1.png')
 chest_texture=pygame.image.load(path+'chestpoint (1).png')
 chest_texture2=pygame.image.load(path+'chestpoint (1)_invi.png')
-ennemy_texture=pygame.transform.scale(pygame.image.load(path+'Ennemies/cright0.png'),(2*64,2*64))
-ennemy_texture2=pygame.transform.scale(pygame.image.load(path+'Ennemies/Captain_invisible.png'),(2*64,2*64))
+
+ennemy_texture2=pygame.transform.scale(pygame.image.load(path+'Ennemies/Invisible/Captain_invisible.png'),(2*64,2*64))
 spawn=pygame.transform.scale(pygame.image.load(path+'rright0.png'),(2*48,2*64))
 spawn2=pygame.transform.scale(pygame.image.load(path+'rright0_invi.png'),(2*48,2*64))
 finish=pygame.image.load(path+'Ile.png')
@@ -24,6 +24,12 @@ arrow_leftup=pygame.transform.scale(pygame.image.load(path+'arrow_leftup.png'),(
 arrow_leftdown=pygame.transform.scale(pygame.image.load(path+'arrow_leftdown.png'),(64,64))
 arrow_rightup=pygame.transform.scale(pygame.image.load(path+'arrow_rightup.png'),(64,64))
 arrow_rightdown=pygame.transform.scale(pygame.image.load(path+'arrow_rightdown.png'),(64,64))
+ennemy_texture=[]
+list=os.listdir(path+'Ennemies/normal')
+for i in range(len(list)):
+    temp=pygame.image.load(path+'Ennemies/normal/'+list[i])
+    temp2=[2*temp.get_size()[0],2*temp.get_size()[1]]
+    ennemy_texture.append(pygame.transform.scale(temp,temp2))
 list=os.listdir(path+'Tools/Tool_10-11')
 toolEnemies=[]
 for i in range(len(list)):
