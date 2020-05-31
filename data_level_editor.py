@@ -16,8 +16,8 @@ chest_texture2=pygame.image.load(path+'chestpoint (1)_invi.png')
 ennemy_texture2=pygame.transform.scale(pygame.image.load(path+'Ennemies/Invisible/Captain_invisible.png'),(2*64,2*64))
 spawn=pygame.transform.scale(pygame.image.load(path+'rright0.png'),(2*48,2*64))
 spawn2=pygame.transform.scale(pygame.image.load(path+'rright0_invi.png'),(2*48,2*64))
-finish=pygame.image.load(path+'Ile.png')
-finish2=pygame.image.load(path+'Ile.png')
+finish=pygame.transform.scale(pygame.image.load(path+'ile_normal.png'),(128*4,128*4))
+finish2=pygame.transform.scale(pygame.image.load(path+'ile_invisible.png'),(128*4,128*4))
 black=pygame.image.load(path+'black.png')
 pointed=pygame.image.load(path+'pointed.png')
 arrow_leftup=pygame.transform.scale(pygame.image.load(path+'arrow_leftup.png'),(64,64))
@@ -40,8 +40,8 @@ for i in range(len(list)-1):
     tool.append(pygame.image.load(path+'Tools/'+list[i]))
 tool.append(toolEnemies[0])
 tool.append(toolEnemies[1])
-tool.append(pygame.transform.scale(pygame.image.load(path+'Ile.png'),(64,64)))
-tool.append(pygame.transform.scale(pygame.image.load(path+'Ile.png'),(64,64)))
+tool.append(pygame.transform.scale(pygame.image.load(path+'ile_button.png'),(64,64)))
+tool.append(pygame.transform.scale(pygame.image.load(path+'ile_button_selected.png'),(64,64)))
 spawn_x,spawn_y=300,350
 finish_x,finish_y=800,350
 end=False

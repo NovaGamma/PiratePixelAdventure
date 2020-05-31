@@ -307,7 +307,7 @@ class ennemy(object):
         if self.touched and not mousepress[0]:
             self.touched=False
 
-def get_name():
+def get_name():#function that get the name of the level to be save
     question=text_button(900,100,10,10,"Please give the name of the level that you created",10,25)
     answer=text_button(200,60,600,280,"CONFIRM",10,10)
     textinput = TextInput()
@@ -536,6 +536,10 @@ def main(scren):
             for key in tools.keys():
                 tools[key]=False
             tools['spawn']=True
+        elif keys[pygame.K_7]:
+            for key in tools.keys():
+                tools[key]=False
+            tools['finish']=True
         elif keys[pygame.K_6] and not ennemy_type[2]:
             ennemy_type[2]=True
             if tools['ennemie']:
@@ -550,10 +554,6 @@ def main(scren):
             tools['ennemie']=True
         elif not keys[pygame.K_6]:
             ennemy_type[2]=False
-        elif keys[pygame.K_7]:
-            for key in tools.keys():
-                tools[key]=False
-            tools['finish']=True
         if keys[pygame.K_TAB] and tab_cooldown:
             for i in range(len(entities)-1):
                 entities[i],entities[i+1]=entities[i+1],entities[i]

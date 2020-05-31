@@ -357,7 +357,7 @@ def load(level,plank1):#here one of the most important function, that load a lev
                 parameters=line.split(' ')
                 if parameters[0]=='plank':#if there is a plank/platform to load we call the platform function, converting the values that are the relative position to the screen into the position in the screen, depending of the current size of the screen
                     platform(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),int(float(parameters[3])*screeny),int(float(parameters[4])*screenx),plank1)
-                elif parameters[0]=='cp'#same thing for the checkpoints:
+                elif parameters[0]=='cp':#same thing for the checkpoints
                     cp(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny))
                 elif parameters[0]=='spawn':#here we just modify the base values for the player, getting the new values
                     player.spawnpoint=[int(float(parameters[1])*screenx),int(float(parameters[2])*screeny)]
