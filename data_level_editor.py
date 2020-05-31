@@ -13,7 +13,12 @@ plank1=pygame.image.load(path+'plank1.png')
 chest_texture=pygame.image.load(path+'chestpoint (1).png')
 chest_texture2=pygame.image.load(path+'chestpoint (1)_invi.png')
 
-ennemy_texture2=pygame.transform.scale(pygame.image.load(path+'Ennemies/Invisible/Captain_invisible.png'),(2*64,2*64))
+ennemy_texture2=[]
+list=os.listdir(path+'Ennemies/Invisible')
+for i in range(len(list)):
+    temp=pygame.image.load(path+'Ennemies/Invisible/'+list[i])
+    temp2=[2*temp.get_size()[0],2*temp.get_size()[1]]
+    ennemy_texture2.append(pygame.transform.scale(temp,temp2))
 spawn=pygame.transform.scale(pygame.image.load(path+'rright0.png'),(2*48,2*64))
 spawn2=pygame.transform.scale(pygame.image.load(path+'rright0_invi.png'),(2*48,2*64))
 finish=pygame.transform.scale(pygame.image.load(path+'ile_normal.png'),(128*4,128*4))

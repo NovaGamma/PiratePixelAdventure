@@ -452,12 +452,9 @@ def load(plank1):
                 elif parameters[0]=='ennemy':
                     ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),int(parameters[3]))
                 elif parameters[0]=='finish':
-                    #print(locals())
-                    #print(finish_x)
                     global finish_x,finish_y
                     finish_x=int(float(parameters[1])*screenx)
                     finish_y=int(float(parameters[2])*screeny)
-                    #print(finish_x)
 
 def blit_tools():
     for i in range(len(tools)):
@@ -671,8 +668,8 @@ def main(scren):
         elif spawning and not mousepress[0]:
             spawning=False
         if tools['finish'] and mousepress[0] and not finishing:
-            finish_x=mousepos[0]-64-screendelta_x
-            finish_y=mousepos[1]-64-screendelta_y
+            finish_x=mousepos[0]-128*2-screendelta_x
+            finish_y=mousepos[1]-128*2-screendelta_y
         elif finishing and not mousepress[0]:
             finishing=False
         only=False
@@ -693,9 +690,9 @@ def main(scren):
         if tools['spawn']:
             screen.blit(spawn2,(mousepos[0]-48,mousepos[1]-64))
         if tools['ennemie']:
-            screen.blit(ennemy_texture2,(mousepos[0]-64,mousepos[1]-64))
+            screen.blit(ennemy_texture2[ennemy_type[0]],(mousepos[0]-64,mousepos[1]-64))
         if tools['finish']:
-            screen.blit(finish2,(mousepos[0]-64,mousepos[1]-64))
+            screen.blit(finish2,(mousepos[0]-128*2,mousepos[1]-128*2))
         if not (keys[pygame.K_RSHIFT] or keys[pygame.K_LSHIFT]):
             screen_moving=False
             if ((len(entities)>0 and entities[0].touched==True) and (tools['move'] or tools['size']) or tools['spawn']) or tools['cp']:
