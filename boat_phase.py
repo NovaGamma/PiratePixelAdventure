@@ -266,5 +266,5 @@ def main_boat():
             boat0_x+=0.5
             cannon0.x+=0.5
         elif not boat0_life:
-            play=False
+            return
         pygame.display.update()

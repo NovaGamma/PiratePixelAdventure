@@ -262,7 +262,7 @@ def display_levels(plank1):#here we will display all the available levels
                     return True
             keys=pygame.key.get_pressed()
             if keys[pygame.K_ESCAPE]:
-                return ''
+                return 1
             if mousepress[0]:
                 for button in lvl_button:
                     if button.collide(mousepos[0],mousepos[1]):
@@ -279,7 +279,7 @@ def display_levels(plank1):#here we will display all the available levels
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse=pygame.mouse.get_pressed()
                 if event.type == pygame.QUIT:
-                    return True
+                    pygame.quit()
             if mouse[0] or mouse[1]:
                 mousepress=True
     pos=-1 #when the user has choosed the wanted level, we get its index in the list
@@ -290,6 +290,7 @@ def display_levels(plank1):#here we will display all the available levels
         global loaded
         loaded=True
         load(levels_name[pos],plank1)#and then we load it using the load function
+        return 0
 
 def reset_player():#to reset the parameters of the player, we just heal it, and reset it's speed and put it on the ground
     player.life=3
@@ -468,6 +469,7 @@ load_levels=False
 boat_phase=False
 nLevel=0
 loaded=False
+abort=0
 level_list=['NIVO1','NIVO2','NIVO3','BOAT']
 g=9.81#defining the gravity constant
 #loading textures
@@ -574,17 +576,18 @@ while not end:#Main loop of the program
                 if pygame.mouse.get_pressed()[0]:#if the left click of the mouse is pressed
                     #we use the name of the button to know what to do, and what function to call
                     if button.name==Language['control_button']:
-                        boat_phase=True
-                        #control_setting=True#setting the on state of an other menu loop variable
+                        control_setting=True#setting the on state of an other menu loop variable
                     elif button.name==Language['language_button']:
                         language_setting=True#setting the on state of an other menu loop variable
                     elif button.name==Language['level_editor_button']:
                         level_editor=True#setting the on state of an other menu loop variable
                     elif button.name==Language['button_load_levels']:
-                        load_levels=True #here it's the menu that will display all the level that the user can load, after he unlocked the level editor
-                        display_levels(plank_texture)#and this function will also call the load function ending up loading a level,
-                        play=True#so we then activate the play loop
-                    start=True#and we exit the main menu
+                        abort=display_levels(plank_texture)#and this function will also call the load function ending up loading a level,
+                        if abort!=1:
+                            play=True#so we then activate the play loop
+                            load_levels=True #here it's the menu that will display all the level that the user can load, after he unlocked the level editor
+                    if abort!=1:
+                        start=True#and we exit the main menu
         if screenx//2-128<=pygame.mouse.get_pos()[0]<=screenx//2+128 and screeny//2-64<pygame.mouse.get_pos()[1]<screeny//2+64:# if the mouse collide with the big PLAY button
             if pygame.mouse.get_pressed()[0]:#if the left click is pressed
                 screen.blit(pygame.image.load('Graphism/button3.png').convert_alpha(),(screenx//2-128,screeny//2-64))
@@ -771,7 +774,6 @@ while not end:#Main loop of the program
                 i.stand=False
                 i.right=False
                 i.left=True
-            '''
             if collide(i,player):
                 if player.hit==0:
                     player.life-=1
@@ -784,7 +786,7 @@ while not end:#Main loop of the program
                 elif player.hit==2:
                     player.hit=1
         if player.hit==2:
-            player.hit=0'''
+            player.hit=0
         for i in entities:#moving all the enities
             i.move()
         for i in prjs:
