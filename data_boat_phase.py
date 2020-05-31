@@ -3,8 +3,8 @@ import pygame
 from screen import screen,screenx,screeny
 
 pygame.init() #initialization of pygame
-path='Graphism/boat_phase/'
 frame=pygame.time.Clock() #function to cap the frame rate with frame.tick(...) that we used below
+path='Graphism/boat_phase/'
 g=9.81 #Earth's gravity constant used to add gravity for the cannon balls
 bg=pygame.transform.scale(pygame.image.load(path+'bg-1.png').convert(),(screenx,screeny))
 bg2=pygame.transform.scale(pygame.image.load(path+'bg10.png').convert_alpha(),(screenx*2,screeny))
@@ -41,6 +41,8 @@ f_heart=pygame.transform.scale(pygame.image.load('Graphism/Full_heart1.png').con
 e_heart=pygame.transform.scale(pygame.image.load('Graphism/Empty_heart.png').convert_alpha(),(64,64))
 skip=pygame.transform.scale(pygame.image.load(path+'space_skip.png').convert_alpha(),(274*2,18*2))
 box=pygame.transform.scale(pygame.image.load(path+'22x22box.png').convert(),(64,64))
+tutorials=[pygame.transform.scale(pygame.image.load(path+'tuto_bateau0.png').convert(),(screenx,screeny)),pygame.transform.scale(pygame.image.load(path+'tuto_bateau1.png').convert(),(screenx,screeny)),pygame.transform.scale(pygame.image.load(path+'tuto_bateau2.png').convert(),(screenx,screeny)),pygame.transform.scale(pygame.image.load(path+'tuto_bateau3.png').convert(),(screenx,screeny))] #this array contains all the tutorial images that we will show to the player before he plays
+tuto_cooldown=3
 enemy_coque=[pygame.image.load(path+'434x280enemy_coque0.png').convert_alpha(),pygame.image.load(path+'434x280enemy_coque1.png').convert_alpha(),pygame.image.load(path+'434x280enemy_coque2.png').convert_alpha(),pygame.image.load(path+'434x280enemy_coque3.png').convert_alpha()]
 coque_mask=pygame.mask.from_surface(enemy_coque[3])
 enemy_flag1=[pygame.image.load(path+'434x280enemy_flag10.png').convert_alpha(),pygame.image.load(path+'434x280enemy_flag11.png').convert_alpha(),pygame.image.load(path+'434x280enemy_flag12.png').convert_alpha(),pygame.image.load(path+'434x280enemy_flag13.png').convert_alpha()]
