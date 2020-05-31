@@ -113,6 +113,7 @@ class player(people):#the class of the player entity
                 i.x-=self.spdx
             for i in prjs:
                 i.x-=self.spdx
+            self.finish[0]-=self.spdx
             self.spawnpoint[0]-=self.spdx
         if (self.y>100 or self.spdy>0) and (self.y<screeny-200-self.height or self.spdy<0 or self.spawnpoint[1]<=0):
             self.y+=self.spdy
@@ -125,6 +126,7 @@ class player(people):#the class of the player entity
                 i.y-=self.spdy
             for i in prjs:
                 i.y-=self.spdy
+            self.finish[1]-=self.spdy
             self.spawnpoint[1]-=self.spdy
 
     def attack(self):#the attack function is the function that summon the projectiles thrown by the player
@@ -395,7 +397,15 @@ def level_editor_unlocked(last_save):#function used, to know if the player has u
     else:
         return False
 
-
+def save_save(save_name):
+    if os.path.exists("Saves/"+save_name+".txt"):#first as we always do, we check if the file exist
+        with open("Saves/"+save_name+".txt" ,'w+') as saveFile:#if yes we open it
+            saveFile.write('level '+str(nLevel))
+            if nLevel==3:
+                saveFile.write('level_editor True')
+            else:
+                saveFile.write('level_editor False')
+            saveFile.write('player '+str(player.Type))
 #beginning of the execution
 #initialysing and loading all the variables/texures/buttons/lists
 pygame.init()
@@ -456,16 +466,13 @@ for i in range(len(temp)):
 temp=os.listdir('Graphism/Player')
 for i in range(len(temp)):
     images=os.listdir('Graphism/Player/'+temp[i])
-    print(images)
     buffer=[]
     for j in range(2,6):
-        print(images[j])
         buffer.append(pygame.image.load('Graphism/Player/'+temp[i]+'/'+images[j]).convert_alpha())
     walkleft.append(buffer)
     print("buffer")
     buffer=[]
     for j in range(6,10):
-        print(images[j])
         buffer.append(pygame.image.load('Graphism/Player/'+temp[i]+'/'+images[j]).convert_alpha())
     walkright.append(buffer)
 #then loading the unique textures
@@ -591,7 +598,8 @@ while not end:#Main loop of the program
             if button.collide(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]):
                 if pygame.mouse.get_pressed()[0]:
                     print("choosed : "+button.info)
-                    nLevel=load_save(button.info)
+                    save_name=button.info
+                    nLevel=load_save(save_name)
                     next_level=level_list[nLevel]
                     start=False
                     choose_save=False
@@ -761,12 +769,11 @@ while not end:#Main loop of the program
             i.draw(hitbox=True)#here we can set hitbox to true to see the hitboxes of the entities
         for i in enemies:
             i.health_bar()#then drawing the health bar of the enemies
-        print(str(player.x)+' '+str(player.y))
-        print(str(player.finish[0])+' '+str(player.finish[1]))
         screen.blit(player.finish[2],(player.finish[0],player.finish[1]))
         if player.x<=player.finish[0]+(128*4)<=player.x+player.width+(128*4) and player.y<=player.finish[1]+(128*4)<=player.y+player.height+(128*4):
             nLevel+=1
             next_level=level_list[nLevel]
+            save_save(save_name)
             play=False
             start=False
             planks=[]

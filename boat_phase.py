@@ -138,7 +138,7 @@ class projectile(): #this class is used for the cannon balls
             screen.blit(cannon_ball,(self.x,self.y))
 
 def main_boat():
-    global boat1_x,boat1_full_life,play,bg2_x,mouse_pos,boat0_x,boat1_life,boat0_life,blue,cooldown,cannon1,cannon0
+    global boat1_x,boat1_full_life,play,bg2_x,mouse_pos,boat0_x,boat1_life,boat0_life,blue,cooldown,cannon1,cannon0,boat1_y
     coque=boat1_part(50,enemy_coque,coque_mask)
     flag1=boat1_part(15,enemy_flag1,flag1_mask)
     flag2=boat1_part(15,enemy_flag2,flag2_mask)
