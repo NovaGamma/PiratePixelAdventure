@@ -1,0 +1,1 @@
+In order to play the game,  open and execute the V1.7, it will allow you to play the first level. In order to test the second phase, the boat phase, the three first levels have to be completed. The first file available, file1, is completed for you to be able to test the boat phase and the level editor.  To start a new campaign you can take the file 2 or 3.
