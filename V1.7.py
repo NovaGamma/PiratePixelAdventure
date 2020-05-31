@@ -198,10 +198,8 @@ class projectile(object):
             self.x+=self.direction*self.kspdx
             if self.direction==-1:
                 screen.blit(lniff,(self.x,self.y))
-                drawn_hitbox=lniff_hitbox[self.count%16//4]
             else:
                 screen.blit(rniff,(self.x,self.y))
-                drawn_hitbox=rniff_hitbox[self.count%16//4]
         elif self.typ=='axe':
             self.x+=self.direction*self.aspdx
             self.aspdy+=self.am*g
