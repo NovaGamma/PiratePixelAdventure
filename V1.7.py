@@ -400,11 +400,11 @@ def level_editor_unlocked(last_save):#function used, to know if the player has u
 def save_save(save_name):
     if os.path.exists("Saves/"+save_name+".txt"):#first as we always do, we check if the file exist
         with open("Saves/"+save_name+".txt" ,'w+') as saveFile:#if yes we open it
-            saveFile.write('level '+str(nLevel))
+            saveFile.write('level '+str(nLevel)+'\n')
             if nLevel==3:
-                saveFile.write('level_editor True')
+                saveFile.write('level_editor True\n')
             else:
-                saveFile.write('level_editor False')
+                saveFile.write('level_editor False\n')
             saveFile.write('player '+str(player.Type))
 #beginning of the execution
 #initialysing and loading all the variables/texures/buttons/lists
@@ -517,19 +517,13 @@ button_control_right=control_button(128,64,128,3*20+2*64,Language['right_control
 button_control_down=control_button(128,64,128,4*20+3*64,Language['down_control_button'],0,0,(255,233,0))
 button_control_shoot=control_button(128,64,128,5*20+4*64,Language['shoot_control_button'],0,0,(255,233,0))
 button_controls=[button_control_left,button_control_right,button_control_down,button_control_jump,button_control_shoot]
-#here putting the continue button in grey if not activated or in yellow if activated
-if level_editor_unlocked(last_save):#here putting a lock on the level editor button if not activated
-    button_level_editor=text_button(256,128,0,0,Language['level_editor_button'],20,128//3+20,(255,233,0))
-    button_load_levels=text_button(256,128,0,128,Language['button_load_levels'],20,128//3+20,(255,233,0))
-else:
-    button_level_editor=image_button(256,128,0,0,pygame.transform.scale(pygame.image.load("Graphism/lock.png").convert_alpha(),(64,64)),96,32,1)
-    button_load_levels=text_button()#creating an empty button for the button menu to load it even if we don't wont to display it
+
 #creating the button for the main menu
 button_language=text_button(256,128,screenx//2-512,screeny//2+128,Language['language_button'],20,128//3+20,(255,233,0))
 french_button=language_button(256,128,screenx//2-512,screeny//2-128,'French',pygame.image.load('Graphism/drapeaux_fr2.PNG').convert_alpha())
 english_button=language_button(256,128,screenx-512,screeny//2-128,'English',pygame.image.load('Graphism/drapeaux_en2.PNG').convert_alpha())
 button_languages=[french_button,english_button]
-button_menu=[button_language,button_control,button_level_editor,button_load_levels]#putting them in a list to dispplay them easily by going through the list
+button_menu=[button_language,button_control]#putting them in a list to dispplay them easily by going through the list
 
 #load saves
 button_save_1=text_button(screenx/3-10, screeny-20, 10, 10, 'File1',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
@@ -600,17 +594,28 @@ while not end:#Main loop of the program
                     print("choosed : "+button.info)
                     save_name=button.info
                     nLevel=load_save(save_name)
+                    #here putting the continue button in grey if not activated or in yellow if activated
+                    if level_editor_unlocked(save_name):#here putting a lock on the level editor button if not activated
+                        button_level_editor=text_button(256,128,0,0,Language['level_editor_button'],20,128//3+20,(255,233,0))
+                        button_load_levels=text_button(256,128,0,128,Language['button_load_levels'],20,128//3+20,(255,233,0))
+                    else:
+                        button_level_editor=image_button(256,128,0,0,pygame.transform.scale(pygame.image.load("Graphism/lock.png").convert_alpha(),(64,64)),96,32,1)
+                        button_load_levels=text_button()#creating an empty button for the button menu to load it even if we don't wont to display it
+                    button_menu.append(button_level_editor)
+                    button_menu.append(button_load_levels)
                     next_level=level_list[nLevel]
                     start=False
                     choose_save=False
                     print(str(player.x)+'   '+str(player.y))
+                    while pygame.mouse.get_pressed()[0]:
+                        for event in pygame.event.get():#here the part that allow the player to quit the menu or the programm at any time
+                            if event.type==pygame.QUIT:
+                                choose_save=False
+                                end=True
         for event in pygame.event.get():#here the part that allow the player to quit the menu or the programm at any time
             if event.type==pygame.QUIT:
                 choose_save=False
                 end=True
-            if event.type==pygame.KEYDOWN and event.key==pygame.K_ESCAPE:
-                choose_save=False
-                start=False
         pygame.display.update()
 
     #the game
@@ -864,6 +869,11 @@ while not end:#Main loop of the program
         pygame.display.update()
 
     if level_editor:#here we call the main function of the level editor giving it the pygame screen
+        while pygame.mouse.get_pressed()[0]:
+            for event in pygame.event.get():#here the part that allow the player to quit the menu or the programm at any time
+                if event.type==pygame.QUIT:
+                    level_editor=False
+                    end=True
         pygame.display.set_caption("Level Editor")
         print("level editor")
         screen=main(screen)
