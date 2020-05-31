@@ -1,3 +1,4 @@
 level LVL
 money 0
 level_editor True
+player 6

@@ -25,14 +25,15 @@ class platform(object):#the class used to generate platform
                 i.isground=True #if it is colliding we the isground parameter to true to indicate that the entity is on the ground, here on a platform
 
 class people(object):#the class used to define the entities such as ennemies or the player but not the projectiles
-    def __init__(self,x,y,height,width,mass,health,prj=None):#here we give the position, the height and mass, the health that the entity has adn the type of
+    def __init__(self,x,y,mass,health,Type=5):#here we give the position, the height and mass, the health that the entity has adn the Type of
     #projectile it will shoot
         entities.append(self)#first we add the entity to the entities list
         self.x=x
         self.y=y
         self.mass=mass
-        self.height=height
-        self.width=width
+        self.Type=Type
+        self.height=walkright[self.Type][0].get_size()[1]*2
+        self.width=walkright[self.Type][0].get_size()[0]*2
         self.spdx=0#we set the speed at 0 for both x and y
         self.spdy=0
         self.right=False #the facing direction isn't set yet, it will depend on the direction the entity is going
@@ -46,32 +47,25 @@ class people(object):#the class used to define the entities such as ennemies or 
         self.health=health
         self.life=self.health #the current 'health' the entity have, wich will vary, while the self.health will remain constant
         self.spawnpoint=[300,screeny//2] #the spawnpoint of the entity, used to move the camera
-        self.prj=prj
         self.cooldown=0#the cooldown for the projectile
         self.hit=0#a parameter that will retain if the entity is being hitted stopping the fact that it would be hitted by the same projectile each frame
-        self.type=0
+
 
     def draw(self,hitbox=False):#the function that display the entity, and if precised the hitbox
-        if not self.isground:
-            if self.spdy<-5:
-                self.info2=0
-            elif self.spdy<20:
-                self.info2=1
-            else:
-                self.info2=2
+        if not self.isground and self.Type>4:
             if self.left:
-                self.info=jumpleft[self.info2]
+                self.info=jumpleft[self.Type-5]
             else:
-                self.info=jumpright[self.info2]
+                self.info=jumpright[self.Type-5]
         else:
             if self.stand:
                 self.walkcount=0
             else:
                 self.walkcount+=1
             if self.left:
-                self.info=walkleft[self.type][self.walkcount//4%8]
+                self.info=walkleft[self.Type][self.walkcount//4%4]
             else:
-                self.info=walkright[self.type][self.walkcount//4%8]
+                self.info=walkright[self.Type][self.walkcount//4%4]
         screen.blit(pygame.transform.scale(self.info,(self.width,self.height)),(self.x,self.y))
         if hitbox:#here we display the hitbox as the border of a rectangle
             self.hitbox=(self.x,self.y,self.width,self.height)
@@ -88,8 +82,8 @@ class people(object):#the class used to define the entities such as ennemies or 
             return 'None'
 
 class ennemy(people):#the class defining ennemies, using the people class
-    def __init__(self,x,y,height,width,mass,health,prj):
-        people.__init__(self,x,y,height,width,mass,health,prj)
+    def __init__(self,x,y,mass,health,Type=1):
+        people.__init__(self,x,y,mass,health,Type)
         enemies.append(self)
         self.turn=False#null
 
@@ -102,9 +96,9 @@ class ennemy(people):#the class defining ennemies, using the people class
         pygame.draw.rect(screen,(255,0,0), (self.x+self.width/2-25*ratiox,-10+self.y-5*ratioy,50*self.life/self.health*ratiox,8*ratioy))
 
 class player(people):#the class of the player entity
-    def __init__(self,x,y,height,width,mass,health,prj):
+    def __init__(self,x,y,mass,health,Type=5):
         self.money=0#the player has to keep its money somewhere
-        people.__init__(self,x,y,height,width,mass,health,prj)
+        people.__init__(self,x,y,mass,health,Type)
 
     def move(self):#the move function is more complicated here because we have to move the camera if the player is going to far in a direction
         if (self.x>200 or self.spdx>0) and (self.x<screenx-400-self.width or self.spdx<0):
@@ -134,7 +128,7 @@ class player(people):#the class of the player entity
 
     def attack(self):#the attack function is the function that summon the projectiles thrown by the player
     #depending of the weapon of the player
-        if self.prj=='axe' and self.cooldown==0:
+        if self.Type==5 and self.cooldown==0:
             throwsound.play()
             if self.left:
                 a=projectile(self.x,self.y+self.height//2+self.spdy,self.spdx,self.spdy,'axe',-1,'player')
@@ -142,7 +136,7 @@ class player(people):#the class of the player entity
                 a=projectile(self.x,self.y+self.height//2+self.spdy,self.spdx,self.spdy,'axe',1,'player')
             prjs.append(a)
             self.cooldown=30
-        if self.prj=='knife' and self.cooldown<=10:
+        if self.Type==6 and self.cooldown<=10:
             throwsound.play()
             if self.left:
                 k=projectile(self.x,self.y+self.height//2+self.spdy,self.spdx,self.spdy,'knife',-1,'player')
@@ -204,8 +198,10 @@ class projectile(object):
             self.x+=self.direction*self.kspdx
             if self.direction==-1:
                 screen.blit(lniff,(self.x,self.y))
+                drawn_hitbox=lniff_hitbox[self.count%16//4]
             else:
                 screen.blit(rniff,(self.x,self.y))
+                drawn_hitbox=rniff_hitbox[self.count%16//4]
         elif self.typ=='axe':
             self.x+=self.direction*self.aspdx
             self.aspdy+=self.am*g
@@ -352,9 +348,9 @@ def load_save(save_name):
                     next_level=temp[1].rstrip("\n")
                 elif temp[0]=='money':
                     player.money=int(temp[1])
-                else:
-                    if temp[0]!='level_editor':
-                        raise Exception(line+" didn't load successully")
+                elif temp[0]=='player':
+                    print(int(temp[1]))
+                    player.Type=int(temp[1])
             return next_level
     else:
         raise Exception("Try to open a non-existing save file : "+save_name)
@@ -375,7 +371,7 @@ def load(level,plank1):
                     player.x=player.spawnpoint[0]
                     player.y=player.spawnpoint[1]
                 elif parameters[0]=='ennemy':
-                    ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),128,96,1,2,parameters[3])
+                    ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),1,2,int(parameters[3]))
     else:
         raise Exception("Level not found")
 
@@ -392,7 +388,7 @@ def level_editor_unlocked(last_save):
                 print(line)
                 temp=line.split(' ')
                 if temp[0]=='level_editor':
-                    if temp[1]=='True':
+                    if temp[1].rstrip('\n')=='True':
                         return True
                     else:
                         return False
@@ -439,8 +435,8 @@ choose_save=False
 load_levels=False
 g=9.81
 #loading textures
-jumpright=[pygame.image.load('Graphism/jumpright0.png').convert_alpha(),pygame.image.load('Graphism/jumpright1.png').convert_alpha(),pygame.image.load('Graphism/jumpright2.png').convert_alpha()]
-jumpleft=[pygame.image.load('Graphism/jumpleft0.png').convert_alpha(),pygame.image.load('Graphism/jumpleft1.png').convert_alpha(),pygame.image.load('Graphism/jumpleft2.png').convert_alpha()]
+jumpright=[pygame.image.load('Graphism/Player/Boy/bjump_right.png').convert_alpha(),pygame.image.load('Graphism/Player/Girl/fjump_right.png').convert_alpha()]
+jumpleft=[pygame.image.load('Graphism/Player/Boy/bjump_left.png').convert_alpha(),pygame.image.load('Graphism/Player/Girl/fjump_left.png').convert_alpha()]
 walkright=[]
 walkleft=[]
 temp=os.listdir('Graphism/Ennemies')
@@ -458,13 +454,21 @@ for i in range(len(temp)):
         buffer.append(pygame.image.load('Graphism/Ennemies/'+temp[i]+'/'+images[j]).convert_alpha())
     walkright.append(buffer)
 
-for i in range(8):
-    temp='rright'+str(i)+'.png'
-    temp2='lleft'+str(i)+'.png'
-    walkright.append(pygame.image.load('Graphism/'+temp).convert_alpha())
-    walkleft.append(pygame.image.load('Graphism/'+temp2).convert_alpha())
-
-
+temp=os.listdir('Graphism/Player')
+for i in range(len(temp)):
+    images=os.listdir('Graphism/Player/'+temp[i])
+    print(images)
+    buffer=[]
+    for j in range(2,6):
+        print(images[j])
+        buffer.append(pygame.image.load('Graphism/Player/'+temp[i]+'/'+images[j]).convert_alpha())
+    walkleft.append(buffer)
+    print("buffer")
+    buffer=[]
+    for j in range(6,10):
+        print(images[j])
+        buffer.append(pygame.image.load('Graphism/Player/'+temp[i]+'/'+images[j]).convert_alpha())
+    walkright.append(buffer)
 
 chestpoint=[pygame.image.load('Graphism/chestpoint (1).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (2).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (3).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (4).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (5).png').convert_alpha()]
 f_heart=pygame.transform.scale(pygame.image.load('Graphism/Full_heart1.png').convert_alpha(),(64,64))
@@ -495,8 +499,7 @@ cps=[]
 prjs=[]
 enemies=[]
 entities=[]
-player=player(300,screeny//2,128,96,5,3,'axe')
-
+player=player(300,screeny//2,5,3,5)
 plank_texture=pygame.image.load('Graphism/plank1.png').convert_alpha()
 #creating all the buttons
 button_setting=image_button(256,128,screenx//2-128,screeny//2-64,pygame.image.load('Graphism/button0.png').convert_alpha())
@@ -625,176 +628,151 @@ while not end:
             if event.type==pygame.QUIT:
                 play=False
                 end=True
-                #goto settings
-        if pygame.mouse.get_pressed()[0] and screenx-64<=pygame.mouse.get_pos()[0]<=screenx and 0<=pygame.mouse.get_pos()[1]<=64:
-            settings=True
-            play=False
-            pygame.mixer.pause()
+        screen.blit(bg,(0,0))
+        keys=pygame.key.get_pressed()
+        player.spdx=0
+        if keys[pygame.K_p] and not(keys[pygame.K_LSHIFT]) and not(frame_per_frame):
+            frame_per_frame=True
+        elif keys[pygame.K_LSHIFT] and keys[pygame.K_p] and frame_per_frame:
+            frame_per_frame=False
+        elif keys[pygame.K_o] and not(keys[pygame.K_LSHIFT]) and not(pause):
+            pause=True
+        elif keys[pygame.K_d] or keys[ControlOpt['right']]:
+            player.stand=False
+            player.left=False
+            player.right=True
+            player.spdx=15
+        elif keys[pygame.K_a] or keys[ControlOpt['left']]:
+            player.stand=False
+            player.right=False
+            player.left=True
+            player.spdx=-15
         else:
-            screen.blit(bg,(0,0))
-            keys=pygame.key.get_pressed()
-            player.spdx=0
-            if keys[pygame.K_p] and not(keys[pygame.K_LSHIFT]) and not(frame_per_frame):
-                frame_per_frame=True
-            elif keys[pygame.K_LSHIFT] and keys[pygame.K_p] and frame_per_frame:
-                frame_per_frame=False
-            elif keys[pygame.K_o] and not(keys[pygame.K_LSHIFT]) and not(pause):
-                pause=True
-            elif keys[pygame.K_d] or keys[ControlOpt['right']]:
-                player.stand=False
-                player.left=False
-                player.right=True
-                player.spdx=15
-            elif keys[pygame.K_a] or keys[ControlOpt['left']]:
-                player.stand=False
-                player.right=False
-                player.left=True
-                player.spdx=-15
-            else:
-                player.stand=True
+            player.stand=True
 
-            for i in entities:
-                if not i.isground:
-                    i.spdy+=i.mass*g//7
-                i.isground=False
+        for i in entities:
+            if not i.isground:
+                i.spdy+=i.mass*g//7
+            i.isground=False
 
-            for i in planks:
-                i.check()
-                i.draw()
+        for i in planks:
+            i.check()
+            i.draw()
 
-            if (keys[pygame.K_w] or keys[ControlOpt['up']]) and player.isground and not player.spdy:
-                jumpsound.play()
-                player.spdy=player.jump
+        if (keys[pygame.K_w] or keys[ControlOpt['up']]) and player.isground and not player.spdy:
+            jumpsound.play()
+            player.spdy=player.jump
 
-            if player.y>screeny:
-                if player.spawnpoint[0]!=300:
-                    for i in planks:
-                        i.x+=300-player.spawnpoint[0]
-                    for i in cps:
-                        i.x+=300-player.spawnpoint[0]
-                    for i in prjs:
-                        i.x+=300-player.spawnpoint[0]
-                    for i in enemies:
-                        i.x+=300-player.spawnpoint[0]
-                    player.spawnpoint[0]=300
-                if player.spawnpoint[1]!=350:
-                    for i in planks:
-                        i.y+=350-player.spawnpoint[1]
-                    for i in cps:
-                        i.y+=350-player.spawnpoint[1]
-                    for i in prjs:
-                        i.y+=350-player.spawnpoint[1]
-                    for i in enemies:
-                        i.y+=350-player.spawnpoint[1]
-                    player.spawnpoint[1]=350
-                player.spdy=0
-                player.x=player.spawnpoint[0]
-                player.y=player.spawnpoint[1]-10
-                player.life-=1
-                player.isground=True
-                deathsound.play()
-            if keys[ControlOpt['shoot']]:
-                player.attack()
-            if player.hit==1:
-                player.hit=2
-            for i in enemies:
-                if i.y>screeny:
-                    i.life=0
-                    enemies.remove(i)
-                    entities.remove(i)
-                if i.hit==1:
-                    i.hit=2
-                for k in prjs:
-                    if collide(i,k):
-                        if i.hit==0:
-                            i.hit=1
-                            i.life-=1
-                            if i.life==0:
-                                player.money+=1
-                                enemies.remove(i)
-                                entities.remove(i)
-                        elif i.hit==2:
-                            i.hit=1
-                if i.hit==2:
-                    i.hit=0
-                for j in planks:
-                    if j.x+i.width-10<=i.x+i.width<=j.x+j.width+10:
-                        if not i.turn and i.x+i.width>=j.x+j.width:
-                            i.turn=True
-                        if i.turn and j.x+i.width>=i.x+i.width:
-                            i.turn=False
-                        elif i.x-300<player.x<i.x and player.y-15<i.y<player.y+15:
-                            i.turn=True
-                        elif i.x+300>player.x>i.x and player.y-15<i.y<player.y+15:
-                            i.turn=False
-                if i.isground and not i.turn:
-                    i.x+=10
-                    i.stand=False
-                    i.right=True
-                    i.left=False
-                elif i.isground:
-                    i.x-=10
-                    i.stand=False
-                    i.right=False
-                    i.left=True
-                '''
-                if collide(i,player):
-                    if player.hit==0:
-                        player.life-=1
-                        player.hit=1
-                        if i.direction=='left':
-                            player.spdx-=10
-                        elif i.direction=='right':
-                            player.spdx+=10
-                        player.spdy+=10
-                    elif player.hit==2:
-                        player.hit=1
-            if player.hit==2:
-                player.hit=0'''
-            for i in entities:
-                i.move()
-            for i in prjs:
-                i.move()
-            for i in planks:
-                i.draw()
-            for i in cps:
-                i.draw()
-            for i in entities:
-                i.draw(hitbox=True)
-            for i in enemies:
-                i.health_bar()
-            player.health_draw()
-            screen.blit(parawheel,(screenx-64,0))
-            if player.life==0:
-                pygame.mixer.stop()
-                deathsound.play()
-                game_over.play()
-                reset_player()
-                play=False
-                start=False
-                planks=[]
-                cps=[]
-                prjs=[]
-                enemies=[]
-                entities=[player]
-
-        pygame.display.update()
-
-    while settings:
-        for event in pygame.event.get():
-            if event.type==pygame.QUIT:
-                settings=False
-                end=True
-        screen.fill([100,20, 20])
-        button_setting.draw(screen)
-        if pygame.mouse.get_pressed()[0]:
-            posX=pygame.mouse.get_pos()[0]
-            posY=pygame.mouse.get_pos()[1]
-            if button_setting.collide(posX,posY):
-                settings=False
-                buttonsound.play()
-                pygame.mixer.unpause()
-                play=True
+        if player.y>screeny:
+            if player.spawnpoint[0]!=300:
+                for i in planks:
+                    i.x+=300-player.spawnpoint[0]
+                for i in cps:
+                    i.x+=300-player.spawnpoint[0]
+                for i in prjs:
+                    i.x+=300-player.spawnpoint[0]
+                for i in enemies:
+                    i.x+=300-player.spawnpoint[0]
+                player.spawnpoint[0]=300
+            if player.spawnpoint[1]!=350:
+                for i in planks:
+                    i.y+=350-player.spawnpoint[1]
+                for i in cps:
+                    i.y+=350-player.spawnpoint[1]
+                for i in prjs:
+                    i.y+=350-player.spawnpoint[1]
+                for i in enemies:
+                    i.y+=350-player.spawnpoint[1]
+                player.spawnpoint[1]=350
+            player.spdy=0
+            player.x=player.spawnpoint[0]
+            player.y=player.spawnpoint[1]-10
+            player.life-=1
+            player.isground=True
+            deathsound.play()
+        if keys[ControlOpt['shoot']]:
+            player.attack()
+        if player.hit==1:
+            player.hit=2
+        for i in enemies:
+            if i.y>screeny:
+                i.life=0
+                enemies.remove(i)
+                entities.remove(i)
+            if i.hit==1:
+                i.hit=2
+            for k in prjs:
+                if collide(i,k):
+                    if i.hit==0:
+                        i.hit=1
+                        i.life-=1
+                        if i.life==0:
+                            player.money+=1
+                            enemies.remove(i)
+                            entities.remove(i)
+                    elif i.hit==2:
+                        i.hit=1
+            if i.hit==2:
+                i.hit=0
+            for j in planks:
+                if j.x+i.width-10<=i.x+i.width<=j.x+j.width+10:
+                    if not i.turn and i.x+i.width>=j.x+j.width:
+                        i.turn=True
+                    if i.turn and j.x+i.width>=i.x+i.width:
+                        i.turn=False
+                    elif i.x-300<player.x<i.x and player.y-15<i.y<player.y+15:
+                        i.turn=True
+                    elif i.x+300>player.x>i.x and player.y-15<i.y<player.y+15:
+                        i.turn=False
+            if i.isground and not i.turn:
+                i.x+=10
+                i.stand=False
+                i.right=True
+                i.left=False
+            elif i.isground:
+                i.x-=10
+                i.stand=False
+                i.right=False
+                i.left=True
+            '''
+            if collide(i,player):
+                if player.hit==0:
+                    player.life-=1
+                    player.hit=1
+                    if i.direction=='left':
+                        player.spdx-=10
+                    elif i.direction=='right':
+                        player.spdx+=10
+                    player.spdy+=10
+                elif player.hit==2:
+                    player.hit=1
+        if player.hit==2:
+            player.hit=0'''
+        for i in entities:
+            i.move()
+        for i in prjs:
+            i.move()
+        for i in planks:
+            i.draw()
+        for i in cps:
+            i.draw()
+        for i in entities:
+            i.draw(hitbox=True)
+        for i in enemies:
+            i.health_bar()
+        player.health_draw()
+        if player.life==0:
+            pygame.mixer.stop()
+            deathsound.play()
+            game_over.play()
+            reset_player()
+            play=False
+            start=False
+            planks=[]
+            cps=[]
+            prjs=[]
+            enemies=[]
+            entities=[player]
         pygame.display.update()
 
     while control_setting:
