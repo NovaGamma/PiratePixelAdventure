@@ -804,6 +804,7 @@ while not end:#Main loop of the program
                 nLevel+=1
                 next_level=level_list[nLevel]
                 save_save(save_name)
+            pygame.mixer.stop()
             play=False
             start=False
             planks=[]
