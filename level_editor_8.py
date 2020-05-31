@@ -446,13 +446,18 @@ def load(plank1):
                 elif parameters[0]=='plank':
                     platform(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),int(float(parameters[3])*screeny),int(float(parameters[4])*screenx),plank1)
                 elif parameters[0]=='spawn':
+                    global spawn_x,spawn_y
                     spawn_x=int(float(parameters[1])*screenx)
                     spawn_y=int(float(parameters[2])*screeny)
                 elif parameters[0]=='ennemy':
                     ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),int(parameters[3]))
                 elif parameters[0]=='finish':
+                    #print(locals())
+                    #print(finish_x)
+                    global finish_x,finish_y
                     finish_x=int(float(parameters[1])*screenx)
                     finish_y=int(float(parameters[2])*screeny)
+                    #print(finish_x)
 
 def blit_tools():
     for i in range(len(tools)):

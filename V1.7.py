@@ -1,6 +1,5 @@
 import pygame
 import os
-import random
 from Classes.button import*#importing the button classes
 from level_editor_8 import main#importing the main function from the level editor, used to run it
 from boat_phase import main_boat
@@ -98,6 +97,8 @@ class ennemy(people):#the class defining ennemies, using the people class
 
 class player(people):#the class of the player entity
     def __init__(self,x,y,mass,health,Type=5):
+        self.finish=[0,0]
+        self.y_spawnpoint=0
         people.__init__(self,x,y,mass,health,Type)
 
     def move(self):#the move function is more complicated here because we have to move the camera if the player is going to far in a direction
@@ -167,6 +168,7 @@ class cp(object):#the class defining the checkpoints in the game
     def draw(self):
         if self.x-player.width+20<=player.x<=self.x+self.width and self.y-self.height<=player.y<=self.y+player.height and not self.cpt:
             self.cpt=True
+            player.y_spawnpoint+=player.spawnpoint[1]-350
             player.spawnpoint=[self.x,self.y]#changing the spawn position of the player
             chestsound.play()#playing all the sounds
             chestsound2.play()
@@ -256,11 +258,14 @@ def display_levels(plank1):#here we will display all the available levels
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
                     return True
-                if mousepress[0]:
-                    for button in lvl_button:
-                        if button.collide(mousepos[0],mousepos[1]):
-                            name=button.name
-                            choosed=True
+            keys=pygame.key.get_pressed()
+            if keys[pygame.K_ESCAPE]:
+                return ''
+            if mousepress[0]:
+                for button in lvl_button:
+                    if button.collide(mousepos[0],mousepos[1]):
+                        name=button.name
+                        choosed=True
     else: #if the Levels directory was empty, we inform the user and wait until he click to go back to the menu
         txt=font.render('NO LEVEL FOUND',0,(255,255,255))
         screen.blit(txt,(2*(screenx//5),screeny//2))
@@ -275,7 +280,7 @@ def display_levels(plank1):#here we will display all the available levels
                     return True
             if mouse[0] or mouse[1]:
                 mousepress=True
-    pos=-1 #when the user has choosed the wanted level, we get it's index in the list
+    pos=-1 #when the user has choosed the wanted level, we get its index in the list
     for levels in levels_name:
         if name==levels:
             pos=levels_name.index(levels)
@@ -302,7 +307,7 @@ def SaveOption():#the function used to save the option such as the size of the s
             temp=key+' '+str(ControlOpt[key])+'\n'
             controlFile.write(temp)
 
-def Init():#the function the import the main assets of the game
+def Init():#the function that import the main assets of the game
     if not(os.path.exists("Saves")):#first we check if the Saves directory exists; if not we create it
         os.mkdir("Saves")
     if os.path.exists("Config"):#same thing for the Config directory
@@ -341,14 +346,14 @@ def load_save(save_name):#the function that laod the given save file
             for line in saveFile:#and then go through each line getting
                 temp=line.split(' ')
                 if temp[0]=='level':#and get the level which the player was, the last time he used this save file
-                    next_level=temp[1].rstrip("\n")
+                    nLevel=int(temp[1])
                 elif temp[0]=='player':#aswell as the type of the player, i-e the Boy or the Girl (type 5 or 6)
                     print(int(temp[1]))
                     player.Type=int(temp[1])
-            return next_level#and we return the level to load to the main part
+            return nLevel#and we return the level to load to the main part
     else:
         raise Exception("Try to open a non-existing save file : "+save_name)#we raise an Exception if the programm tried to open a non existing file
-    return ''
+    return -1
 
 def load(level,plank1):#here one of the most important function, that load a level, from the level editor,
     if os.path.exists("Levels/"+level):
@@ -366,6 +371,8 @@ def load(level,plank1):#here one of the most important function, that load a lev
                     player.y=player.spawnpoint[1]
                 elif parameters[0]=='ennemy':#and here the same, just creating an ennemy, and giving it's type
                     ennemy(int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),1,2,int(parameters[3]))
+                elif parameters[0]=='finish':
+                    player.finish=[int(float(parameters[1])*screenx),int(float(parameters[2])*screeny),finish_line]
     else:
         raise Exception("Level not found")
 
@@ -413,15 +420,17 @@ pygame.display.set_caption(Language["title"])#here we create the screen and load
 frame=pygame.time.Clock()
 bg=pygame.transform.scale(pygame.image.load('Graphism/bg (1).png').convert_alpha(),(screenx,screeny))
 play=False#then we initialize all the variables used for the menu loops
-start=False
+start=True
 end=False
 settings=False
 control_setting=False
 language_setting=False
 level_editor=False
-choose_save=False
+choose_save=True
 load_levels=False
 boat_phase=False
+nLevel=0
+level_list=['NIVO1','NIVO2','NIVO3','BOAT']
 g=9.81#defining the gravity constant
 #loading textures
 jumpright=[pygame.image.load('Graphism/Player/Boy/bjump_right.png').convert_alpha(),pygame.image.load('Graphism/Player/Girl/fjump_right.png').convert_alpha()]#loding the textures for the jump animation, from the two types of player
@@ -460,6 +469,7 @@ for i in range(len(temp)):
         buffer.append(pygame.image.load('Graphism/Player/'+temp[i]+'/'+images[j]).convert_alpha())
     walkright.append(buffer)
 #then loading the unique textures
+finish_line=pygame.transform.scale(pygame.image.load('Graphism/level_editor/ile_normal.png'),(128*4,128*4))
 chestpoint=[pygame.image.load('Graphism/chestpoint (1).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (2).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (3).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (4).png').convert_alpha(),pygame.image.load('Graphism/chestpoint (5).png').convert_alpha()]
 f_heart=pygame.transform.scale(pygame.image.load('Graphism/Full_heart1.png').convert_alpha(),(64,64))
 e_heart=pygame.transform.scale(pygame.image.load('Graphism/Empty_heart.png').convert_alpha(),(64,64))
@@ -501,10 +511,6 @@ button_control_down=control_button(128,64,128,4*20+3*64,Language['down_control_b
 button_control_shoot=control_button(128,64,128,5*20+4*64,Language['shoot_control_button'],0,0,(255,233,0))
 button_controls=[button_control_left,button_control_right,button_control_down,button_control_jump,button_control_shoot]
 #here putting the continue button in grey if not activated or in yellow if activated
-if last_save=='None':
-    button_continue=text_button(256,128,screenx//3,0,Language['button_continue'],20,128//3+20,(155,133,0))
-else:
-    button_continue=text_button(256,128,screenx//3,0,Language['button_continue'],20,128//3+20,(255,233,0))
 if level_editor_unlocked(last_save):#here putting a lock on the level editor button if not activated
     button_level_editor=text_button(256,128,0,0,Language['level_editor_button'],20,128//3+20,(255,233,0))
     button_load_levels=text_button(256,128,0,128,Language['button_load_levels'],20,128//3+20,(255,233,0))
@@ -516,7 +522,7 @@ button_language=text_button(256,128,screenx//2-512,screeny//2+128,Language['lang
 french_button=language_button(256,128,screenx//2-512,screeny//2-128,'French',pygame.image.load('Graphism/drapeaux_fr2.PNG').convert_alpha())
 english_button=language_button(256,128,screenx-512,screeny//2-128,'English',pygame.image.load('Graphism/drapeaux_en2.PNG').convert_alpha())
 button_languages=[french_button,english_button]
-button_menu=[button_language,button_control,button_level_editor,button_load_levels,button_continue]#putting them in a list to dispplay them easily by going through the list
+button_menu=[button_language,button_control,button_level_editor,button_load_levels]#putting them in a list to dispplay them easily by going through the list
 
 #load saves
 button_save_1=text_button(screenx/3-10, screeny-20, 10, 10, 'File1',posX=(screenx/3-3*10)/3,posY=(screeny-20)/2)
@@ -556,41 +562,40 @@ while not end:#Main loop of the program
                     start=True#and we exit the main menu
         if screenx//2-128<=pygame.mouse.get_pos()[0]<=screenx//2+128 and screeny//2-64<pygame.mouse.get_pos()[1]<screeny//2+64:# if the mouse collide with the big PLAY button
             if pygame.mouse.get_pressed()[0]:#if the left click is pressed
-                choose_save=True
-                start=True#we will go to the play loop
-                clicking=True
                 screen.blit(pygame.image.load('Graphism/button3.png').convert_alpha(),(screenx//2-128,screeny//2-64))
+                if nLevel<3:
+                    planks=[]#we re-initialize the lists, to ensure that they are empty, for example when the player has already played a level, and dedide to change to another save file
+                    cps=[]
+                    prjs=[]
+                    enemies=[]
+                    entities=[player]
+                    reset_player()
+                    load(next_level,plank_texture)#we then proceed to load the level
+                    pygame.mixer.stop()
+                    buttonsound.play()
+                    soundtrack.play()
+                    start=True#we will go to the play loop
+                    play=True
+                else:
+                    boat_phase=True
+                    start=True
             else:
                 #if the user wasn't clicking, we show that the mouse is over this button by changing it's color
                 screen.blit(pygame.image.load('Graphism/button2.png').convert_alpha(),(screenx//2-128,screeny//2-64))
         pygame.display.update()
 
     while choose_save:#the function that is called for the user to choose which save file he want to use
-        if not(pygame.mouse.get_pressed()[0]):#we use the clicking variable as a buffer to ensure that no button will be pressed with the changing menu, if a boutton was the same place
-            clicking=False
         screen.fill([100,20, 20])#we put the background of the menu
         for button in button_save:
             button.draw(screen,1)#we display the button for the files
             if button.collide(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]):
-                if pygame.mouse.get_pressed()[0] and not(clicking):
+                if pygame.mouse.get_pressed()[0]:
                     print("choosed : "+button.info)
-                    next_level=load_save(button.info)
-                    if next_level!='':#when choosed, we get the level that has to be loaded
-                        planks=[]#we re-initialize the lists, to ensure that they are empty, for example when the player has already played a level, and dedide to change to another save file
-                        cps=[]
-                        prjs=[]
-                        enemies=[]
-                        entities=[player]
-                        reset_player()
-                        load(next_level,plank_texture)#we then proceed to load the level
-                        pygame.mixer.stop()
-                        buttonsound.play()
-                        soundtrack.play()
-                        play=True#and we activate the play loop
-                        choose_save=False
-                        print(str(player.x)+'   '+str(player.y))
-                    else:
-                        print('Wow such empty')#if there was no Save file we
+                    nLevel=load_save(button.info)
+                    next_level=level_list[nLevel]
+                    start=False
+                    choose_save=False
+                    print(str(player.x)+'   '+str(player.y))
         for event in pygame.event.get():#here the part that allow the player to quit the menu or the programm at any time
             if event.type==pygame.QUIT:
                 choose_save=False
@@ -667,6 +672,7 @@ while not end:#Main loop of the program
                     i.x+=300-player.spawnpoint[0]
                 for i in enemies:
                     i.x+=300-player.spawnpoint[0]
+                player.finish[0]+=300-player.spawnpoint[0]
                 player.spawnpoint[0]=300
             if player.spawnpoint[1]!=350:
                 for i in planks:
@@ -677,6 +683,7 @@ while not end:#Main loop of the program
                     i.y+=350-player.spawnpoint[1]
                 for i in enemies:
                     i.y+=350-player.spawnpoint[1]
+                player.finish[1]+=350-player.spawnpoint[1]
                 player.spawnpoint[1]=350
             player.spdy=0#we will reset the speed and position of the player
             player.x=player.spawnpoint[0]
@@ -689,7 +696,7 @@ while not end:#Main loop of the program
         if player.hit==1:#here if the player has been hit, we set him in invulnerability mode
             player.hit=2
         for i in enemies:#if an ennemy is offscreen in the y axis, we kill it and remove it from the entities and enemies lists
-            if i.y>screeny:
+            if i.y-player.spawnpoint[1]-1700-player.y_spawnpoint>screeny:
                 i.life=0
                 enemies.remove(i)
                 entities.remove(i)
@@ -713,9 +720,9 @@ while not end:#Main loop of the program
                         i.turn=True
                     if i.turn and j.x+i.width>=i.x+i.width:
                         i.turn=False
-                    elif i.x-300<player.x<i.x and player.y-15<i.y<player.y+15:
+                    elif i.x-300<player.x<i.x and player.y-30<i.y<player.y+15:
                         i.turn=True
-                    elif i.x+300>player.x>i.x and player.y-15<i.y<player.y+15:
+                    elif i.x+300>player.x>i.x and player.y-30<i.y<player.y+15:
                         i.turn=False
             if i.isground and not i.turn:#then applying the moving forces on the ennemyes
                 i.x+=10
@@ -754,6 +761,19 @@ while not end:#Main loop of the program
             i.draw(hitbox=True)#here we can set hitbox to true to see the hitboxes of the entities
         for i in enemies:
             i.health_bar()#then drawing the health bar of the enemies
+        print(str(player.x)+' '+str(player.y))
+        print(str(player.finish[0])+' '+str(player.finish[1]))
+        screen.blit(player.finish[2],(player.finish[0],player.finish[1]))
+        if player.x<=player.finish[0]+(128*4)<=player.x+player.width+(128*4) and player.y<=player.finish[1]+(128*4)<=player.y+player.height+(128*4):
+            nLevel+=1
+            next_level=level_list[nLevel]
+            play=False
+            start=False
+            planks=[]
+            cps=[]
+            prjs=[]
+            enemies=[]
+            entities=[player]
         player.health_draw()#and the one for the player
         if player.life==0:#if the player died
             pygame.mixer.stop()#we reset all the lists and reset the player and quit this loop, to go to the main menu
