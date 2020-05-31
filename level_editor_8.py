@@ -566,6 +566,8 @@ def main(scren):
                 planks.remove(entities[0])
             elif entities[0] in cps:
                 cps.remove(entities[0])
+            elif entities[0] in ennemies:
+                ennemies.remove(entities[0])
             entities.remove(entities[0])
             redo=[]
             del_cooldown=False
@@ -665,7 +667,7 @@ def main(scren):
             spawning=False
         if tools['finish'] and mousepress[0] and not finishing:
             finish_x=mousepos[0]-64-screendelta_x
-            finish_y=mousepos[1]-64-screendelta_x
+            finish_y=mousepos[1]-64-screendelta_y
         elif finishing and not mousepress[0]:
             finishing=False
         only=False

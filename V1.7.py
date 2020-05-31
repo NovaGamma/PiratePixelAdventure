@@ -3,7 +3,8 @@ import os
 import random
 from Classes.button import*#importing the button classes
 from level_editor_8 import main#importing the main function from the level editor, used to run it
-import data_level_editor #importing the data necessary for the level editor
+from boat_phase import main_boat
+from screen import*
 
 class platform(object):#the class used to generate platform
     def __init__(self,x,y,height,width,img):#here just defining the size and the texture of the platfrom
@@ -389,11 +390,10 @@ def level_editor_unlocked(last_save):#function used, to know if the player has u
 
 
 #beginning of the execution
-#initilysing and loading all the variables/texures/buttons/lists
+#initialysing and loading all the variables/texures/buttons/lists
 pygame.init()
 pygame.font.init()
 font=pygame.font.Font(None,50)
-ScreenOpt={}
 ControlOpt={}
 Language={}
 Options=Init()#here we get the values from the Init function allowing us to create the pygame screen
@@ -406,16 +406,11 @@ else:
     last_save=Options[3]
 print(ScreenOpt)
 print(ControlOpt)
-screenx=ScreenOpt['screenX']#getting the size of the screen
-screeny=ScreenOpt['screenY']
-data_level_editor.screenx=screenx#here setting the size of the screen for the level editor by modifing it's data
-data_level_editor.screeny=screeny
 ratiox=screenx/1400#callculating the ratio of the screen from the base size, for the display of the health bar of the player
 ratioy=screeny/700
 SaveOption()#we save the Option, to prevent corruption from a crash
 pygame.display.set_caption(Language["title"])#here we create the screen and load the background
 frame=pygame.time.Clock()
-screen=pygame.display.set_mode((screenx,screeny))
 bg=pygame.transform.scale(pygame.image.load('Graphism/bg (1).png').convert_alpha(),(screenx,screeny))
 play=False#then we initialize all the variables used for the menu loops
 start=False
@@ -426,6 +421,7 @@ language_setting=False
 level_editor=False
 choose_save=False
 load_levels=False
+boat_phase=False
 g=9.81#defining the gravity constant
 #loading textures
 jumpright=[pygame.image.load('Graphism/Player/Boy/bjump_right.png').convert_alpha(),pygame.image.load('Graphism/Player/Girl/fjump_right.png').convert_alpha()]#loding the textures for the jump animation, from the two types of player
@@ -547,7 +543,8 @@ while not end:#Main loop of the program
                 if pygame.mouse.get_pressed()[0]:#if the left click of the mouse is pressed
                     #we use the name of the button to know what to do, and what function to call
                     if button.name==Language['control_button']:
-                        control_setting=True#setting the on state of an other menu loop variable
+                        boat_phase=True
+                        #control_setting=True#setting the on state of an other menu loop variable
                     elif button.name==Language['language_button']:
                         language_setting=True#setting the on state of an other menu loop variable
                     elif button.name==Language['level_editor_button']:
@@ -844,6 +841,11 @@ while not end:#Main loop of the program
         print("level editor")
         screen=main(screen)
         level_editor=False
+        start=False
+
+    if boat_phase:
+        main_boat()
+        boat_phase=False
         start=False
 
 pygame.quit()
