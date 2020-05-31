@@ -138,63 +138,72 @@ class projectile(): #this class is used for the cannon balls
             screen.blit(cannon_ball,(self.x,self.y))
 
 def main_boat():
-    global boat1_x,boat1_full_life,play,bg2_x,mouse_pos,boat0_x,boat1_life,boat0_life,blue,cooldown,cannon1,cannon0,boat1_y
-    coque=boat1_part(50,enemy_coque,coque_mask)
-    flag1=boat1_part(15,enemy_flag1,flag1_mask)
+    global boat1_x,boat1_full_life,play,bg2_x,mouse_pos,boat0_x,boat0_y,boat1_life,boat0_life,blue,cooldown,cannon1,cannon0,boat1_y,tutorials,tuto_cooldown,body,ally_projectiles,boat0_full_life,body_parts
+    ##use of the classes for variables
+    coque=boat1_part(40,enemy_coque,coque_mask)
+    flag1=boat1_part(15,enemy_flag1,flag1_mask)    #enemy boat parts with (their life,their sprites,their hitbox) in parameters
     flag2=boat1_part(15,enemy_flag2,flag2_mask)
-    cannon0=canon(cannon_x,cannon_y-40,0)
-    cannon1=canon(cannon_x+boat1_x-263,cannon_y-50,1)
+    cannon0=canon(cannon_x,cannon_y-40,0) #player's cannons
+    cannon1=canon(cannon_x+boat1_x-263,cannon_y-50,1) #enemy's cannon
     for part in body:
-        boat1_full_life+=part.full_life
-    while play:
-        frame.tick(60)
-        print(frame)
+        boat1_full_life+=part.full_life #the enemy's max health is the addition of the max health of every enemy boat parts
+    play=True
+    while play: #the boat phase loop starts here
+        frame.tick(60) #frame cap at 60fps
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
-                play=False
-        mouse_pos=pygame.mouse.get_pos()
-        mouse_pressed=pygame.mouse.get_pressed()[0]
-        keys=pygame.key.get_pressed()
-        screen.blit(bg,(0,0))
-        if bg2_x>-screenx:
+                play=False #if the player closes the window, the game ends
+        mouse_pos=pygame.mouse.get_pos() #this variable is a tuple with the x and y positions of the mouse
+        mouse_pressed=pygame.mouse.get_pressed()[0] #this variable is a boolean ; True if the left click has been pressed by the player and False otherwise
+        keys=pygame.key.get_pressed() #this variable contains the information
+        screen.blit(bg,(0,0)) #this is the display of the blue sky, the background
+        if bg2_x>-screenx: #this is used to have moving sea and clouds.
             bg2_x-=2
         else:
-            bg2_x=0
-        if boat1_x>953:
+            bg2_x=0 #when the background reaches a certain point, it goes back to the beginning, to move again and again
+        if boat1_x>953: #this is the intro, when the enemy boat arrives and is still moving
             boat1_x-=0.5
             cannon1.x-=0.5
             cannon1.check()
             cannon0.check()
-            if keys[pygame.K_SPACE]:
+            if keys[pygame.K_SPACE]: #the player can enter space to skip the intro, putting the enemy boat where it was aiming to go
                 cannon1.x-=boat1_x-953
                 boat1_x=953
-        else:
-            if keys[pygame.K_1]:
-                cannon0.x=cannon_x+boat0_x-14
-                blue=True
-            elif keys[pygame.K_2]:
-                cannon0.x=cannon_x+boat0_x-14
-                blue=False
-            cannon0.check()
-            cannon1.check()
-            if mouse_pressed and (blue and not cannon0.cooldown or not blue and not cannon0.cooldown2):
-                if blue:
-                    projectile(0)
-                    cannon0.cooldown=40
-                else:
-                    projectile(2)
-                    cannon0.cooldown2=120
-                cannon0.recoil=ally_projectiles[len(ally_projectiles)-1].spd_x_0
-                cannon0.x-=cannon0.recoil
-            if cannon0.cooldown:
+                tuto_cooldown+=1
+        elif tuto_cooldown:
+            screen.blit(tutorials[-int(tuto_cooldown)],(0,0))
+            screen.blit(skip,(screenx//2-274,screeny-70))
+            if keys[pygame.K_SPACE] and (tuto_cooldown*2)%2==0:
+                tuto_cooldown-=0.5
+            elif not keys[pygame.K_SPACE] and (tuto_cooldown*2)%2!=0:
+                tuto_cooldown-=0.5
+        else: #the game starts for the player
+            if keys[pygame.K_1]: #if he enters 1 he equips his first cannon
+                cannon0.x=cannon_x+boat0_x-14 #the cannon is moved in case the other cannon took recoil and wasn't at its place
+                blue=True #first cannon
+            elif keys[pygame.K_2]: #if he enters 2 he equips his second cannon
+                cannon0.x=cannon_x+boat0_x-14 #the cannon is moved in case the other cannon took recoil and wasn't at its place
+                blue=False #second cannon
+            cannon0.check() #this function rotates the cannon to follow the mouse
+            cannon1.check() #this function rotates the cannon randomly
+            if mouse_pressed and (blue and not cannon0.cooldown or not blue and not cannon0.cooldown2): #the player clicked with his mouse to shoot
+                if blue: #if the cannon is the first
+                    projectile(0) #we shoot the first cannon ball
+                    cannon0.cooldown=40 #we add a cooldown to the cannon (a reload time)
+                else: #second cannon
+                    projectile(2) #second cannon ball created
+                    cannon0.cooldown2=120 #we add a cooldown to the second cannon (with a bigger reload time)
+                cannon0.recoil=ally_projectiles[len(ally_projectiles)-1].spd_x_0 #we add a recoil to the cannon when he shoots a ball, depending on the horizontal velocity of the ball
+                cannon0.x-=cannon0.recoil #the cannon takes the recoil
+            if cannon0.cooldown: #the first cannon is reloading and can't shoot
                 if blue and cannon0.cooldown>20:
-                    cannon0.x+=cannon0.recoil/20
-                cannon0.cooldown-=1
-            if cannon0.cooldown2:
+                    cannon0.x+=cannon0.recoil/20 #we place the cannon back (taking 20 frames)
+                cannon0.cooldown-=1 #we reduce the cooldown timer by one each frame if it is !=0
+            if cannon0.cooldown2: #the second cannon is reloading and can't shoot
                 if not blue and cannon0.cooldown2>100:
-                    cannon0.x+=cannon0.recoil/20
-                cannon0.cooldown2-=1
-            if not cannon1.cooldown and cannon1.life>0:
+                    cannon0.x+=cannon0.recoil/20 #same as above
+                cannon0.cooldown2-=1 #same as above
+            if not cannon1.cooldown and cannon1.life>0: #the enemy cannon can shoot
                 projectile(1)
                 cannon1.recoil=enemy_projectiles[len(enemy_projectiles)-1].spd_x_0
                 cannon1.x-=cannon1.recoil
@@ -203,68 +212,83 @@ def main_boat():
                 if cannon1.cooldown>60:
                     cannon1.x+=cannon1.recoil/20
                 cannon1.cooldown-=1
-        if cannon0.damaged:
-            screen.blit(boat0_damaged,(boat0_x,boat0_y))
-            cannon0.damaged-=1
-        else:
-            screen.blit(boat0,(boat0_x,boat0_y))
-        for part in body:
-            part.draw()
-        for proj in ally_projectiles:
-            proj.check()
-            proj.draw()
-        for proj in enemy_projectiles:
-            boat0_life+=proj.check()
-            proj.draw()
-            for i in ally_projectiles:
-                if proj.x+proj.width>=i.x>=proj.x-i.width and proj.y+proj.height>=i.y>=proj.y-i.height and proj in enemy_projectiles:
-                    enemy_projectiles.remove(proj)
-                    if not i.sort:
-                        ally_projectiles.remove(i)
-        cannon0.draw()
-        cannon1.draw()
-        if cannon1.cooldown2:
-            cannon1.cooldown2-=1
-            if not cannon1.cooldown2:
-                cannon1.life=8
-            screen.blit(box,(cannon1.x-6,cannon1.y-4))
-        screen.blit(bg2,(bg2_x,0))
-        if boat1_x<=953:
-            heart=0
-            for i in range(boat0_life):
-                screen.blit(f_heart,(heart,0))
-                heart+=70
-            for i in range(boat0_full_life-boat0_life):
-                screen.blit(e_heart,(heart,0))
-                heart+=70
-            heart=0
-            for i in range(2):
-                if blue and i or not blue and not i:
-                    screen.blit(icons[2*i],(heart,70))
-                else:
-                    screen.blit(icons[2*i+1],(heart,70))
-                if not i and cannon0.cooldown:
-                    screen.blit(reload[int((1-cannon0.cooldown/40)*8)],(heart,70))
-                elif i and cannon0.cooldown2:
-                    screen.blit(reload[int((1-cannon0.cooldown2/120)*8)],(heart,70))
-                heart+=70
-            if cooldown<100:
-                screen.blit(boss_fight,(screenx//2-95*4,screeny//2-100-14*4))
-                cooldown+=1
-            boat1_life=0
-            for part in body_parts:
-                boat1_life+=part.life
-            pygame.draw.rect(screen,(0,0,0), (screenx//2-274,screeny-50,274*2,18*2))
-            pygame.draw.rect(screen,(255,0,0), (screenx//2-272,screeny-48,272*2*boat1_life/boat1_full_life,16*2))
-        else:
-            screen.blit(skip,(screenx//2-274,screeny-70))
-        if not boat1_life:
-            boat1_y+=0.4
-            cannon1.y+=0.4
-            cannon1.recoil=0
-            cannon1.cooldown+=1
-            boat0_x+=0.5
-            cannon0.x+=0.5
-        elif not boat0_life:
-            return
+        if boat1_x>953 or not tuto_cooldown:
+            if cannon0.damaged:
+                screen.blit(boat0_damaged,(boat0_x,boat0_y))
+                cannon0.damaged-=1
+            else:
+                screen.blit(boat0,(boat0_x,boat0_y))
+            for part in body:
+                part.draw()
+            for proj in ally_projectiles:
+                proj.check()
+                proj.draw()
+            for proj in enemy_projectiles:
+                boat0_life+=proj.check()
+                proj.draw()
+                for i in ally_projectiles:
+                    if proj.x+proj.width>=i.x>=proj.x-i.width and proj.y+proj.height>=i.y>=proj.y-i.height and proj in enemy_projectiles:
+                        enemy_projectiles.remove(proj)
+                        if not i.sort:
+                            ally_projectiles.remove(i)
+            cannon0.draw()
+            cannon1.draw()
+            if cannon1.cooldown2:
+                cannon1.cooldown2-=1
+                if not cannon1.cooldown2:
+                    cannon1.life=8
+                screen.blit(box,(cannon1.x-6,cannon1.y-4))
+            screen.blit(bg2,(bg2_x,0))
+            if boat1_x<=953:
+                heart=0
+                for i in range(boat0_life):
+                    screen.blit(f_heart,(heart,0))
+                    heart+=70
+                for i in range(boat0_full_life-boat0_life):
+                    screen.blit(e_heart,(heart,0))
+                    heart+=70
+                heart=0
+                for i in range(2):
+                    if blue and i or not blue and not i:
+                        screen.blit(icons[2*i],(heart,70))
+                    else:
+                        screen.blit(icons[2*i+1],(heart,70))
+                    if not i and cannon0.cooldown:
+                        screen.blit(reload[int((1-cannon0.cooldown/40)*8)],(heart,70))
+                    elif i and cannon0.cooldown2:
+                        screen.blit(reload[int((1-cannon0.cooldown2/120)*8)],(heart,70))
+                    heart+=70
+                if cooldown<100:
+                    screen.blit(boss_fight,(screenx//2-95*4,screeny//2-100-14*4))
+                    cooldown+=1
+                boat1_life=0
+                for part in body_parts:
+                    boat1_life+=part.life
+                pygame.draw.rect(screen,(0,0,0), (screenx//2-274,screeny-50,274*2,18*2))
+                pygame.draw.rect(screen,(255,0,0), (screenx//2-272,screeny-48,272*2*boat1_life/boat1_full_life,16*2))
+            else:
+                screen.blit(skip,(screenx//2-274,screeny-70))
+            if not boat1_life:
+                boat1_y+=0.4
+                cannon1.y+=0.4
+                cannon1.recoil=0
+                cannon1.cooldown+=1
+                boat0_x+=0.5
+                cannon0.x+=0.5
+            elif not boat0_life:
+                play=False
+        if boat0_x>=screenx:
+            play=False
         pygame.display.update()
+    boat1_life=1
+    boat1_full_life=0
+    boat0_full_life=boat0_life=10
+    cooldown=0
+    blue=True
+    boat0_x=14
+    boat0_y=352-40
+    boat1_x=953+400
+    boat1_y=339-30
+    body=[]
+    body_parts=[]
+    ally_projectiles=[]
