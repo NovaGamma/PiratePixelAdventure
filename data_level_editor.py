@@ -8,7 +8,7 @@ screendelta_x=screendelta_y=0
 path='Graphism/level_editor/'
 tools={'move':True,'size':False,'place':False,'cp':False,'spawn':False,'ennemie':False,'finish':False}
 toolList=['move','size','place','cp','spawn','ennemie','finish']
-bg=pygame.transform.scale(pygame.image.load(path+'bg (1).png'),(screenx,screeny))
+bg=pygame.transform.scale(pygame.image.load(path+'bg.png'),(screenx,screeny))
 plank1=pygame.image.load(path+'plank1.png')
 chest_texture=pygame.image.load(path+'chestpoint (1).png')
 chest_texture2=pygame.image.load(path+'chestpoint (1)_invi.png')

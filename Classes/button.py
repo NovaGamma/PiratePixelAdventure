@@ -55,6 +55,9 @@ class image_button(button):
         if image==None:
             raise Exception("No image given for the button")
         self.image=image
+        if width==height==0:
+            width=image.get_width()+20
+            height=image.get_height()+20
         self.posX=posX
         self.posY=posY
         self.r=r

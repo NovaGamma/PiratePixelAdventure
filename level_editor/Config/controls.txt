@@ -1,5 +1,0 @@
-up 273
-down 274
-right 275
-left 276
-shoot 32
